@@ -1,11 +1,19 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.meta;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
+
+@Entity
+@Table(name = "tb_metas_financeiras")
 public class MetaFinanceira {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private String objetivo;
     private BigDecimal valorAlvo;
     private BigDecimal valorAcumulado;

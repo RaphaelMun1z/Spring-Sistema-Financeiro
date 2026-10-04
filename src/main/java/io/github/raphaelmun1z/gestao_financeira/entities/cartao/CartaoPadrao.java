@@ -2,11 +2,19 @@ package io.github.raphaelmun1z.gestao_financeira.entities.cartao;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoPadraoEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
+
+@Entity
+@Table(name = "tb_cartoes_padrao")
 public class CartaoPadrao extends Cartao {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private BigDecimal limiteCredito;
     private Integer diaFechamento;
     private Integer diaVencimento;

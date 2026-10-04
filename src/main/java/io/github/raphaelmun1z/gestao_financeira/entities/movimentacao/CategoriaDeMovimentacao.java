@@ -3,10 +3,18 @@ package io.github.raphaelmun1z.gestao_financeira.entities.movimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.TipoCategoriaEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.orcamento.Orcamento;
 import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
+import jakarta.persistence.*;
 
 import java.util.Set;
 
+
+@Entity
+@Table(name = "tb_categorias_de_movimentacao")
 public class CategoriaDeMovimentacao {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private String nome;
     private TipoCategoriaEnum tipo;
     private String cor;

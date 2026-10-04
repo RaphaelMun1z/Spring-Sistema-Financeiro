@@ -4,12 +4,20 @@ import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.MetodoPagamentoEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.pagamento.Parcela;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
+
+@Entity
+@Table(name = "tb_lancamentos")
 public class Lancamento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private BigDecimal valorTotal;
     private Date dataLancamento;
     private String descricao;

@@ -1,11 +1,19 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.orcamento;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
+
+@Entity
+@Table(name = "tb_orcamentos")
 public class Orcamento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private YearMonth mesReferencia;
     private BigDecimal valorLimite;
     private BigDecimal valorCorrente;

@@ -2,11 +2,19 @@ package io.github.raphaelmun1z.gestao_financeira.entities.cartao;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoVouncherEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Set;
 
+
+@Entity
+@Table(name = "tb_cartoes_vouncher")
 public class CartaoVouncher extends Cartao {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private Integer diaRecarga;
     private BigDecimal valorRecarga;
     private BigDecimal saldoCorrente;

@@ -1,9 +1,18 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.investimento;
 
+import jakarta.persistence.*;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
+
+@Entity
+@Table(name = "tb_investimentos")
 public class Investimento {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private String categoria;
     private Date dataInicio;
     private BigDecimal valorInicial;
