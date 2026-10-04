@@ -11,14 +11,12 @@ import java.util.Set;
 @Entity
 @Table(name = "tb_cartoes_vouncher")
 public class CartaoVouncher extends Cartao {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     private Integer diaRecarga;
     private BigDecimal valorRecarga;
     private BigDecimal saldoCorrente;
     private TipoCartaoVouncherEnum tipoCartao;
+
+    @OneToMany(mappedBy = "cartao")
     private Set<HistoricoVouncher> historicoDeGastos;
 
     public CartaoVouncher() {

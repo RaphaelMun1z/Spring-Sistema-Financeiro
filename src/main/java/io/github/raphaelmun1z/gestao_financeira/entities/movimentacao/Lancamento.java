@@ -23,9 +23,24 @@ public class Lancamento {
     private String descricao;
     private MetodoPagamentoEnum metodoPagamento;
     private Boolean ehRecorrente;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
     private CategoriaDeMovimentacao categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "conta_bancaria_id")
     private ContaBancaria contaBancaria;
+
+    @ManyToOne
+    @JoinColumn(name = "cartao_id")
     private Cartao cartao;
+
+    @OneToMany(
+        mappedBy = "lancamento",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
     private Set<Parcela> parcelas;
 
     public Lancamento() {

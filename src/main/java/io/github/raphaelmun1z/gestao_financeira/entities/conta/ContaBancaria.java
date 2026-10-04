@@ -19,7 +19,12 @@ public class ContaBancaria {
     private BigDecimal saldoCorrente;
     private BigDecimal creditoTotal;
     private BigDecimal creditoRestante;
+
+    @ManyToOne
+    @JoinColumn(name = "titular_id")
     private Usuario titular;
+
+    @OneToMany(mappedBy = "contaBancaria")
     private Set<Cartao> cartoes;
 
     public ContaBancaria() {

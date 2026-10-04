@@ -18,6 +18,9 @@ public class MetaFinanceira {
     private BigDecimal valorAlvo;
     private BigDecimal valorAcumulado;
     private YearMonth dataConclusaoPrevista;
+
+    @ManyToOne
+    @JoinColumn(name = "criador_id")
     private Usuario criador;
 
     public MetaFinanceira() {

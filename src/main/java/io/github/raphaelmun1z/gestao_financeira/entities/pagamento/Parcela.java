@@ -16,7 +16,13 @@ public class Parcela {
 
     private BigDecimal valorParcela;
     private Date dataLancamento;
+
+    @ManyToOne
+    @JoinColumn(name = "lancamento_id")
     private Lancamento lancamento;
+
+    @ManyToOne
+    @JoinColumn(name = "registro_despesas_id")
     private RegistroDeDespesas registroDeDespesas;
 
     public Parcela() {

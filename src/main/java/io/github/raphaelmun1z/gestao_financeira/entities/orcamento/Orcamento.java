@@ -17,6 +17,9 @@ public class Orcamento {
     private YearMonth mesReferencia;
     private BigDecimal valorLimite;
     private BigDecimal valorCorrente;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id")
     private CategoriaDeMovimentacao categoria;
 
     public Orcamento() {

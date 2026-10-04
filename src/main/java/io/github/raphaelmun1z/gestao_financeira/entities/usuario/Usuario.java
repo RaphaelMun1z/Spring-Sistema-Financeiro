@@ -1,6 +1,7 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.usuario;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import io.github.raphaelmun1z.gestao_financeira.entities.investimento.Investimento;
 import io.github.raphaelmun1z.gestao_financeira.entities.meta.MetaFinanceira;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.usuario.enums.PapelDoUsuarioEnum;
@@ -24,10 +25,19 @@ public class Usuario implements UserDetails {
 
     private String senha;
     private String nomeCompleto;
-    private Set<CategoriaDeMovimentacao> categoriasDeMovimentacao = new HashSet<>();
-    private Set<ContaBancaria> contasBancarias = new HashSet<>();
-    private List<MetaFinanceira> metasFinanceiras = new ArrayList<>();
     private PapelDoUsuarioEnum papel;
+
+    @OneToMany(mappedBy = "autor")
+    private Set<CategoriaDeMovimentacao> categoriasDeMovimentacao = new HashSet<>();
+
+    @OneToMany(mappedBy = "investidor")
+    private Set<Investimento> investimentos = new HashSet<>();
+
+    @OneToMany(mappedBy = "titular")
+    private Set<ContaBancaria> contasBancarias = new HashSet<>();
+
+    @OneToMany(mappedBy = "criador")
+    private List<MetaFinanceira> metasFinanceiras = new ArrayList<>();
 
     public Usuario() {
     }

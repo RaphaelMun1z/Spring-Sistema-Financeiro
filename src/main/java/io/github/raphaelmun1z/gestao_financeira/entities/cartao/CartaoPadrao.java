@@ -11,14 +11,12 @@ import java.util.Set;
 @Entity
 @Table(name = "tb_cartoes_padrao")
 public class CartaoPadrao extends Cartao {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     private BigDecimal limiteCredito;
     private Integer diaFechamento;
     private Integer diaVencimento;
     private TipoCartaoPadraoEnum tipoCartao;
+
+    @OneToMany(mappedBy = "cartao")
     private Set<Fatura> faturas;
 
     public CartaoPadrao() {

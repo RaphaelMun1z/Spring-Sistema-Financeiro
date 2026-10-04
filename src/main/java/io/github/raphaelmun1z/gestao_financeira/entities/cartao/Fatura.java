@@ -9,10 +9,6 @@ import java.time.YearMonth;
 @Entity
 @Table(name = "tb_faturas")
 public class Fatura extends RegistroDeDespesas {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     private Boolean foiPago;
 
     public Fatura() {

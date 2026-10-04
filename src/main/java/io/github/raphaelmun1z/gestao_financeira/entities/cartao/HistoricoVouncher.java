@@ -9,10 +9,6 @@ import java.time.YearMonth;
 @Entity
 @Table(name = "tb_historicos_vouncher")
 public class HistoricoVouncher extends RegistroDeDespesas {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
     public HistoricoVouncher() {
     }
 

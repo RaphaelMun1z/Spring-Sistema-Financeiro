@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.investimento;
 
+import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -18,6 +19,10 @@ public class Investimento {
     private BigDecimal valorInicial;
     private BigDecimal valorCorrente;
     private Float jurosAoMes;
+
+    @ManyToOne
+    @JoinColumn(name = "investidor_id")
+    private Usuario investidor;
 
     public Investimento() {
     }

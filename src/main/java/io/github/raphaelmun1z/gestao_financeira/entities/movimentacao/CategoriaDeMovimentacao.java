@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 
 import java.util.Set;
 
-
 @Entity
 @Table(name = "tb_categorias_de_movimentacao")
 public class CategoriaDeMovimentacao {
@@ -19,7 +18,12 @@ public class CategoriaDeMovimentacao {
     private TipoCategoriaEnum tipo;
     private String cor;
     private String icone;
+
+    @ManyToOne
+    @JoinColumn(name = "autor_id")
     private Usuario autor;
+
+    @OneToMany(mappedBy = "categoria")
     private Set<Orcamento> orcamentos;
 
     public CategoriaDeMovimentacao() {

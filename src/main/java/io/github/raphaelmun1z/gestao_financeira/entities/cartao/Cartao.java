@@ -1,9 +1,19 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.cartao;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import jakarta.persistence.*;
 
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Cartao {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     private String apelido;
+
+    @ManyToOne
+    @JoinColumn(name = "conta_bancaria_id")
     private ContaBancaria contaBancaria;
 
     public Cartao() {
