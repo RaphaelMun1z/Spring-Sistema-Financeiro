@@ -1,0 +1,86 @@
+package io.github.raphaelmun1z.gestao_financeira.entities.movimentacao;
+
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
+import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.MetodoPagamentoEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.pagamento.Parcela;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Set;
+
+public class Lancamento {
+    private BigDecimal valorTotal;
+    private Date dataLancamento;
+    private String descricao;
+    private MetodoPagamentoEnum metodoPagamento;
+    private Boolean ehRecorrente;
+    private CategoriaDeMovimentacao categoria;
+    private ContaBancaria contaBancaria;
+    private Cartao cartao;
+    private Set<Parcela> parcelas;
+
+    public Lancamento() {
+    }
+
+    public Lancamento(Cartao cartao, ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, MetodoPagamentoEnum metodoPagamento, String descricao, Date dataLancamento, BigDecimal valorTotal) {
+        this.cartao = cartao;
+        this.contaBancaria = contaBancaria;
+        this.categoria = categoria;
+        this.ehRecorrente = ehRecorrente;
+        this.metodoPagamento = metodoPagamento;
+        this.descricao = descricao;
+        this.dataLancamento = dataLancamento;
+        this.valorTotal = valorTotal;
+    }
+
+    public Lancamento(BigDecimal valorTotal, Date dataLancamento, String descricao, MetodoPagamentoEnum metodoPagamento, Boolean ehRecorrente, CategoriaDeMovimentacao categoria, ContaBancaria contaBancaria) {
+        this.valorTotal = valorTotal;
+        this.dataLancamento = dataLancamento;
+        this.descricao = descricao;
+        this.metodoPagamento = metodoPagamento;
+        this.ehRecorrente = ehRecorrente;
+        this.categoria = categoria;
+        this.contaBancaria = contaBancaria;
+    }
+
+    public BigDecimal getValorTotal() {
+        return valorTotal;
+    }
+
+    public Date getDataLancamento() {
+        return dataLancamento;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public MetodoPagamentoEnum getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public Boolean getEhRecorrente() {
+        return ehRecorrente;
+    }
+
+    public CategoriaDeMovimentacao getCategoria() {
+        return categoria;
+    }
+
+    public ContaBancaria getContaBancaria() {
+        return contaBancaria;
+    }
+
+    public Cartao getCartao() {
+        return cartao;
+    }
+
+    public Set<Parcela> getParcelas() {
+        return parcelas;
+    }
+}
