@@ -16,7 +16,7 @@ public record ContaBancariaReqDTO(
 ) {
     public ContaBancariaReqDTO {
         if (saldoCorrente == null) {
-            saldoCorrente = BigDecimal.valueOf(0.0);
+            saldoCorrente = BigDecimal.ZERO;
         }
 
         if (creditoRestante == null) {

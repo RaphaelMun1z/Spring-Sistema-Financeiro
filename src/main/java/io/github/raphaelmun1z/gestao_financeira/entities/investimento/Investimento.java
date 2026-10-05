@@ -35,6 +35,10 @@ public class Investimento {
         this.jurosAoMes = jurosAoMes;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getCategoria() {
         return categoria;
     }

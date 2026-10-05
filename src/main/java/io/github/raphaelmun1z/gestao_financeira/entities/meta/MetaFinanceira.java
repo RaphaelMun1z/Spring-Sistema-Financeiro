@@ -33,6 +33,10 @@ public class MetaFinanceira {
         this.dataConclusaoPrevista = dataConclusaoPrevista;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getObjetivo() {
         return objetivo;
     }
