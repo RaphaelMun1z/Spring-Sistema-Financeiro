@@ -29,11 +29,16 @@ public class CategoriaDeMovimentacao {
     public CategoriaDeMovimentacao() {
     }
 
-    public CategoriaDeMovimentacao(String nome, TipoCategoriaEnum tipo, String cor, String icone) {
+    public CategoriaDeMovimentacao(String nome, TipoCategoriaEnum tipo, String cor, String icone, Usuario autor) {
         this.nome = nome;
         this.tipo = tipo;
         this.cor = cor;
         this.icone = icone;
+        this.autor = autor;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getNome() {

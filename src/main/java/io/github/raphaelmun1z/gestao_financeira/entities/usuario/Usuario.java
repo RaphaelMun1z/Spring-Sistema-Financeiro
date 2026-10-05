@@ -63,9 +63,9 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (papel == PapelDoUsuarioEnum.PAPEL_PADRAO) {
+        if (papel == PapelDoUsuarioEnum.PADRAO) {
             return List.of(new SimpleGrantedAuthority("ROLE_PADRAO"));
-        } else if (papel == PapelDoUsuarioEnum.PAPEL_ADMINISTRADOR) {
+        } else if (papel == PapelDoUsuarioEnum.ADMINISTRADOR) {
             return List.of(
                 new SimpleGrantedAuthority("ROLE_ADMINISTRADOR"),
                 new SimpleGrantedAuthority("ROLE_PADRAO")

@@ -3,6 +3,7 @@ package io.github.raphaelmun1z.gestao_financeira.repositories;
 import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
 import org.apache.catalina.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 

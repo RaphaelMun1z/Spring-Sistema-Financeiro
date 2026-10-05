@@ -8,6 +8,7 @@ import java.time.YearMonth;
 import java.util.Set;
 
 @Entity
+@Table(name = "tb_registros_despesas")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class RegistroDeDespesas {
     @Id

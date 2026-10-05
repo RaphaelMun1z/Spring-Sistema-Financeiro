@@ -2,23 +2,22 @@ package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
-public record UserDetailsResponseDTO(
+public record UserDetailsResDTO(
     String id,
     String nomeCompleto,
     String email,
     String papel,
     List<String> authorities
 ) {
-    public UserDetailsResponseDTO(UserDetails user) {
+    public UserDetailsResDTO(Usuario user) {
         this(
-            ((Usuario) user).getId(),
-            ((Usuario) user).getNomeCompleto(),
-            ((Usuario) user).getEmail(),
-            ((Usuario) user).getPapel(),
+            user.getId(),
+            user.getNomeCompleto(),
+            user.getEmail(),
+            user.getPapel(),
             user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList()

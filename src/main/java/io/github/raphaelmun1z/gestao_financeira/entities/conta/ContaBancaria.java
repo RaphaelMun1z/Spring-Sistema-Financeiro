@@ -37,6 +37,10 @@ public class ContaBancaria {
         this.creditoRestante = creditoRestante;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public String getNomeDoBanco() {
         return nomeDoBanco;
     }
@@ -59,6 +63,10 @@ public class ContaBancaria {
 
     public BigDecimal getCreditoRestante() {
         return creditoRestante;
+    }
+
+    public BigDecimal getCreditoUsado() {
+        return creditoTotal.subtract(creditoRestante);
     }
 
     public Usuario getTitular() {

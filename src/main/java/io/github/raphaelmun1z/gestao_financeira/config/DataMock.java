@@ -24,7 +24,7 @@ public class DataMock implements CommandLineRunner {
         String email = "admin@gmail.com";
         String senha = "admin123";
         String senhaHash = passwordEncoder.encode(senha);
-        PapelDoUsuarioEnum papel = PapelDoUsuarioEnum.PAPEL_PADRAO;
+        PapelDoUsuarioEnum papel = PapelDoUsuarioEnum.PADRAO;
 
         if (repository.findByEmail(email).isEmpty()) {
             Usuario novoUsuario = new Usuario(nome, email, senhaHash, papel);

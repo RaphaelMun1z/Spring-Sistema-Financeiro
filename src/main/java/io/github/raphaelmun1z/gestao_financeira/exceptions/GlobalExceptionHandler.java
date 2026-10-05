@@ -10,15 +10,19 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import tools.jackson.databind.exc.InvalidFormatException;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,13 +47,66 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+        HttpMessageNotReadableException ex,
+        HttpHeaders headers,
+        HttpStatusCode status,
+        WebRequest request
+    ) {
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof InvalidFormatException invalidFormatException
+            && invalidFormatException.getTargetType().isEnum()) {
+
+            String campo = invalidFormatException.getPath().isEmpty()
+                ? "campo"
+                : invalidFormatException.getPath().getLast().toString();
+
+            if (campo.contains("[\"")) {
+                campo = campo.substring(
+                    campo.lastIndexOf("[\"") + 2,
+                    campo.lastIndexOf("\"]")
+                );
+            }
+
+            String valoresPermitidos = Arrays.toString(
+                invalidFormatException.getTargetType().getEnumConstants()
+            );
+
+            ExceptionResponse response = new ExceptionResponse(
+                LocalDateTime.now().toString(),
+                List.of(
+                    "Valor inválido para '" + campo +
+                        "'. Valores permitidos: " + valoresPermitidos
+                ),
+                request.getDescription(false)
+            );
+
+            return new ResponseEntity<>(
+                response,
+                HttpStatus.BAD_REQUEST
+            );
+        }
+
+        ExceptionResponse response = new ExceptionResponse(
+            LocalDateTime.now().toString(),
+            List.of("O corpo da requisição é obrigatório ou está inválido."),
+            request.getDescription(false)
+        );
+
+        return new ResponseEntity<>(
+            response,
+            HttpStatus.BAD_REQUEST
+        );
+    }
+
+    @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
         MethodArgumentNotValidException ex,
         @NonNull HttpHeaders headers,
         @NonNull HttpStatusCode status,
         @NonNull WebRequest request
     ) {
-
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> {
             String fieldName = error.getField();

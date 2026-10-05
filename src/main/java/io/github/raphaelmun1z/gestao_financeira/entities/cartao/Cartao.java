@@ -4,6 +4,7 @@ import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "tb_cartoes")
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Cartao {
     @Id
