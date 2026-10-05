@@ -24,4 +24,12 @@ public abstract class Cartao {
         this.apelido = apelido;
         this.contaBancaria = contaBancaria;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getApelido() {
+        return apelido;
+    }
 }

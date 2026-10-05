@@ -25,10 +25,15 @@ public class Orcamento {
     public Orcamento() {
     }
 
-    public Orcamento(YearMonth mesReferencia, BigDecimal valorLimite, CategoriaDeMovimentacao categoria) {
+    public Orcamento(YearMonth mesReferencia, BigDecimal valorLimite, BigDecimal valorCorrente, CategoriaDeMovimentacao categoria) {
         this.mesReferencia = mesReferencia;
         this.valorLimite = valorLimite;
+        this.valorCorrente = valorCorrente;
         this.categoria = categoria;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public YearMonth getMesReferencia() {

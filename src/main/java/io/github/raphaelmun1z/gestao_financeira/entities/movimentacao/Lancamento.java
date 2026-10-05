@@ -57,14 +57,18 @@ public class Lancamento {
         this.valorTotal = valorTotal;
     }
 
-    public Lancamento(BigDecimal valorTotal, Date dataLancamento, String descricao, MetodoPagamentoEnum metodoPagamento, Boolean ehRecorrente, CategoriaDeMovimentacao categoria, ContaBancaria contaBancaria) {
-        this.valorTotal = valorTotal;
-        this.dataLancamento = dataLancamento;
-        this.descricao = descricao;
-        this.metodoPagamento = metodoPagamento;
-        this.ehRecorrente = ehRecorrente;
-        this.categoria = categoria;
+    public Lancamento(ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, MetodoPagamentoEnum metodoPagamento, String descricao, Date dataLancamento, BigDecimal valorTotal) {
         this.contaBancaria = contaBancaria;
+        this.categoria = categoria;
+        this.ehRecorrente = ehRecorrente;
+        this.metodoPagamento = metodoPagamento;
+        this.descricao = descricao;
+        this.dataLancamento = dataLancamento;
+        this.valorTotal = valorTotal;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public BigDecimal getValorTotal() {
@@ -101,6 +105,10 @@ public class Lancamento {
 
     public Cartao getCartao() {
         return cartao;
+    }
+
+    public void setCartao(Cartao cartao) {
+        this.cartao = cartao;
     }
 
     public Set<Parcela> getParcelas() {
