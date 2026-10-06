@@ -32,4 +32,8 @@ public abstract class RegistroDeDespesas {
         this.valorTotal = valorTotal;
         this.dataReferencia = dataReferencia;
     }
+
+    public String getId() {
+        return id;
+    }
 }

@@ -5,7 +5,7 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "tb_parcelas")
@@ -15,7 +15,7 @@ public class Parcela {
     private String id;
 
     private BigDecimal valorParcela;
-    private Date dataLancamento;
+    private LocalDate dataLancamento;
 
     @ManyToOne
     @JoinColumn(name = "lancamento_id")
@@ -28,18 +28,22 @@ public class Parcela {
     public Parcela() {
     }
 
-    public Parcela(BigDecimal valorParcela, Date dataLancamento, Lancamento lancamento, RegistroDeDespesas registroDeDespesas) {
+    public Parcela(BigDecimal valorParcela, LocalDate dataLancamento, Lancamento lancamento, RegistroDeDespesas registroDeDespesas) {
         this.valorParcela = valorParcela;
         this.dataLancamento = dataLancamento;
         this.lancamento = lancamento;
         this.registroDeDespesas = registroDeDespesas;
     }
 
+    public String getId() {
+        return id;
+    }
+
     public BigDecimal getValorParcela() {
         return valorParcela;
     }
 
-    public Date getDataLancamento() {
+    public LocalDate getDataLancamento() {
         return dataLancamento;
     }
 

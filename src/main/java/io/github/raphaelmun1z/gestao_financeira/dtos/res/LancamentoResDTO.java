@@ -4,12 +4,12 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.MetodoPagamentoEnum;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public record LancamentoResDTO(
     String id,
     BigDecimal valorTotal,
-    Date dataLancamento,
+    LocalDate dataLancamento,
     String descricao,
     MetodoPagamentoEnum metodoPagamento,
     Boolean ehRecorrente,

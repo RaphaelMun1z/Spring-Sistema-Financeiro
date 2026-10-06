@@ -7,7 +7,7 @@ import io.github.raphaelmun1z.gestao_financeira.entities.pagamento.Parcela;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 
@@ -19,10 +19,11 @@ public class Lancamento {
     private String id;
 
     private BigDecimal valorTotal;
-    private Date dataLancamento;
+    private LocalDate dataLancamento;
     private String descricao;
     private MetodoPagamentoEnum metodoPagamento;
     private Boolean ehRecorrente;
+    private Integer quantidadeParcelas;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
@@ -46,21 +47,23 @@ public class Lancamento {
     public Lancamento() {
     }
 
-    public Lancamento(Cartao cartao, ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, MetodoPagamentoEnum metodoPagamento, String descricao, Date dataLancamento, BigDecimal valorTotal) {
+    public Lancamento(Cartao cartao, ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, Integer quantidadeParcelas, MetodoPagamentoEnum metodoPagamento, String descricao, LocalDate dataLancamento, BigDecimal valorTotal) {
         this.cartao = cartao;
         this.contaBancaria = contaBancaria;
         this.categoria = categoria;
         this.ehRecorrente = ehRecorrente;
+        this.quantidadeParcelas = quantidadeParcelas;
         this.metodoPagamento = metodoPagamento;
         this.descricao = descricao;
         this.dataLancamento = dataLancamento;
         this.valorTotal = valorTotal;
     }
 
-    public Lancamento(ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, MetodoPagamentoEnum metodoPagamento, String descricao, Date dataLancamento, BigDecimal valorTotal) {
+    public Lancamento(ContaBancaria contaBancaria, CategoriaDeMovimentacao categoria, Boolean ehRecorrente, Integer quantidadeParcelas, MetodoPagamentoEnum metodoPagamento, String descricao, LocalDate dataLancamento, BigDecimal valorTotal) {
         this.contaBancaria = contaBancaria;
         this.categoria = categoria;
         this.ehRecorrente = ehRecorrente;
+        this.quantidadeParcelas = quantidadeParcelas;
         this.metodoPagamento = metodoPagamento;
         this.descricao = descricao;
         this.dataLancamento = dataLancamento;
@@ -75,7 +78,7 @@ public class Lancamento {
         return valorTotal;
     }
 
-    public Date getDataLancamento() {
+    public LocalDate getDataLancamento() {
         return dataLancamento;
     }
 
@@ -93,6 +96,10 @@ public class Lancamento {
 
     public Boolean getEhRecorrente() {
         return ehRecorrente;
+    }
+
+    public Integer getQuantidadeParcelas() {
+        return quantidadeParcelas;
     }
 
     public CategoriaDeMovimentacao getCategoria() {

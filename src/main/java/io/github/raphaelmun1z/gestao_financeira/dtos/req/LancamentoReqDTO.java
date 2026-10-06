@@ -4,14 +4,15 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.Meto
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public record LancamentoReqDTO(
     @NotNull(message = "O 'valorTotal' é obrigatório!") BigDecimal valorTotal,
-    Date dataLancamento,
+    LocalDate dataLancamento,
     String descricao,
     @NotNull(message = "O 'metodoPagamento' é obrigatório!") MetodoPagamentoEnum metodoPagamento,
     Boolean ehRecorrente,
+    Integer quantidadeParcelas,
     @NotNull(message = "A 'categoriaId' é obrigatória!") String categoriaId,
     @NotNull(message = "A 'contaBancariaId' é obrigatória!") String contaBancariaId,
     String cartaoId
@@ -22,11 +23,15 @@ public record LancamentoReqDTO(
         }
 
         if (dataLancamento == null) {
-            dataLancamento = new Date();
+            dataLancamento = LocalDate.now();
         }
 
         if (ehRecorrente == null) {
             ehRecorrente = false;
+        }
+
+        if(quantidadeParcelas == null) {
+            quantidadeParcelas = 1;
         }
     }
 }

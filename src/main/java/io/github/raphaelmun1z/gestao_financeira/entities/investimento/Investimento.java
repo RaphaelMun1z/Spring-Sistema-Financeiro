@@ -4,8 +4,7 @@ import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
-
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "tb_investimentos")
@@ -15,7 +14,7 @@ public class Investimento {
     private String id;
 
     private String categoria;
-    private Date dataInicio;
+    private LocalDate dataInicio;
     private BigDecimal valorInicial;
     private BigDecimal valorCorrente;
     private Float jurosAoMes;
@@ -27,7 +26,7 @@ public class Investimento {
     public Investimento() {
     }
 
-    public Investimento(String categoria, Date dataInicio, BigDecimal valorInicial, BigDecimal valorCorrente, Float jurosAoMes) {
+    public Investimento(String categoria, LocalDate dataInicio, BigDecimal valorInicial, BigDecimal valorCorrente, Float jurosAoMes) {
         this.categoria = categoria;
         this.dataInicio = dataInicio;
         this.valorInicial = valorInicial;
@@ -47,7 +46,7 @@ public class Investimento {
         this.categoria = categoria;
     }
 
-    public Date getDataInicio() {
+    public LocalDate getDataInicio() {
         return dataInicio;
     }
 
