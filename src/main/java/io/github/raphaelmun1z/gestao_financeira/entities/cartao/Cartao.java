@@ -32,4 +32,8 @@ public abstract class Cartao {
     public String getApelido() {
         return apelido;
     }
+
+    public String getContaBancariaId() {
+        return contaBancaria.getId();
+    }
 }
