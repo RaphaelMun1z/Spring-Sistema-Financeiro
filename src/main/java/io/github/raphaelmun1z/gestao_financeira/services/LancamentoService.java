@@ -3,9 +3,9 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LancamentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ParcelaReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.LancamentoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.CartaoPadrao;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Fatura;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.*;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoPadraoEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoVouncherEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
@@ -13,12 +13,13 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.Meto
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.YearMonth;
 
 @Service
 public class LancamentoService {
@@ -39,13 +40,40 @@ public class LancamentoService {
     }
 
     public LancamentoResDTO cadastrar(LancamentoReqDTO data) {
-        if ((data.metodoPagamento() == MetodoPagamentoEnum.CARTAO) && (data.cartaoId() == null)) {
-            throw new BusinessException("É necessário informar o 'cartaoId' para registrar um lançamento com cartão!");
+        validaDadosCartao(data);
+
+        Lancamento lancamento = geraLancamento(data);
+
+        Cartao cartao = defineCartao(data, lancamento);
+
+        Lancamento lancamentoSalvo = repository.save(lancamento);
+
+        int quantidadeParcelas = data.quantidadeParcelas() != null ? data.quantidadeParcelas() : 1;
+
+        switch (data.metodoPagamento()) {
+            case CARTAO_DEBITO -> pagarComCartaoDeDebito(data.valorTotal(), lancamentoSalvo.getId(), cartao);
+            case CARTAO_CREDITO -> pagarComCartaoDeCredito(data.valorTotal(), lancamentoSalvo.getId(), cartao, quantidadeParcelas);
+            case VOUNCHER -> pagarComVouncher(data.valorTotal(), lancamentoSalvo.getId(), cartao);
+            default -> pagarOutrosMetodos(data.valorTotal(), lancamentoSalvo.getId());
         }
 
+        return new LancamentoResDTO(lancamentoSalvo);
+    }
+
+    private @Nullable Cartao defineCartao(LancamentoReqDTO data, Lancamento lancamento) {
+        Cartao cartao = null;
+        if (data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_CREDITO
+        || data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_DEBITO) {
+            cartao = cartaoService.buscarEntidadePorId(data.cartaoId());
+            lancamento.setCartao(cartao);
+        }
+        return cartao;
+    }
+
+    private @NonNull Lancamento geraLancamento(LancamentoReqDTO data) {
         ContaBancaria contaBancaria = contaBancariaService.buscarEntidadePorId(data.contaBancariaId());
         CategoriaDeMovimentacao categoriaDeMovimentacao = categoriaMovimentacaoService.buscarEntidadePorId(data.categoriaId());
-        Lancamento novoObj = new Lancamento(
+        return new Lancamento(
             contaBancaria,
             categoriaDeMovimentacao,
             data.ehRecorrente(),
@@ -55,39 +83,83 @@ public class LancamentoService {
             data.dataLancamento(),
             data.valorTotal()
         );
+    }
 
-        Cartao cartao = null;
-        if (data.metodoPagamento() == MetodoPagamentoEnum.CARTAO) {
-            cartao = cartaoService.buscarEntidadePorId(data.cartaoId());
-            novoObj.setCartao(cartao);
+    private static void validaDadosCartao(LancamentoReqDTO data) {
+        if ((data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_CREDITO
+            || data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_DEBITO)
+            && (data.cartaoId() == null)) {
+            throw new BusinessException("É necessário informar o 'cartaoId' para registrar um lançamento com cartão!");
+        }
+    }
+
+    private void pagarComCartaoDeDebito(BigDecimal valorTotal, String lancamentoId, Cartao cartao) {
+        if (!(cartao instanceof CartaoPadrao cartaoDebito)
+            || (cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.DEBITO)) {
+            throw new BusinessException("O cartão selecionado não é de Débito!");
         }
 
-        Lancamento salvo = repository.save(novoObj);
+        // Registrar parcela única no dia da compra
+        parcelaService.cadastrar(new ParcelaReqDTO(
+            valorTotal,
+            lancamentoId
+        ));
+    }
 
-        // Gera parcelas
-        if (data.metodoPagamento() == MetodoPagamentoEnum.CARTAO && data.quantidadeParcelas() > 0) {
-            Integer diaFechamentoFatura = ((CartaoPadrao) cartao).getDiaFechamento();
-            LocalDate dataLancamento = LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), diaFechamentoFatura);
-            BigDecimal valorParcela = data.valorTotal().divide(BigDecimal.valueOf(data.quantidadeParcelas()), RoundingMode.CEILING);
-            Fatura fatura = faturaService.cadastrar(
-                new Fatura(
-                    BigDecimal.valueOf(1000),
-                    YearMonth.now()
-                )
-            );
-
-            for (int ii = 0; ii < data.quantidadeParcelas(); ii++) {
-                parcelaService.cadastrar(new ParcelaReqDTO(
-                    valorParcela,
-                    salvo.getId(),
-                    dataLancamento,
-                    fatura.getId()
-                ));
-                dataLancamento = dataLancamento.plusMonths(1);
-            }
+    private void pagarComCartaoDeCredito(BigDecimal valorTotal, String lancamentoId, Cartao cartao, int qntParcelas) {
+        if (!(cartao instanceof CartaoPadrao cartaoCredito)
+            || (cartaoCredito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO
+            && cartaoCredito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO_E_DEBITO)) {
+            throw new BusinessException("O cartão selecionado não é de Crédito!");
         }
 
-        return new LancamentoResDTO(salvo);
+        // Obtém dados do cartão
+        int diaFechamentoFatura = cartaoCredito.getDiaFechamento();
+        BigDecimal valorParcela = valorTotal.divide(BigDecimal.valueOf(qntParcelas), RoundingMode.CEILING);
+
+        LocalDate dataLancamentoParcela;
+        for (int mes = 1; mes <= qntParcelas; mes++) {
+            dataLancamentoParcela = LocalDate.now().plusMonths(mes).withDayOfMonth(diaFechamentoFatura + 1);
+
+            // Busca fatura do mês referência
+            // TO-DO: busca fatura real
+            Fatura faturaDoMes = new Fatura();
+
+            parcelaService.cadastrar(new ParcelaReqDTO(
+                valorParcela,
+                lancamentoId,
+                dataLancamentoParcela,
+                faturaDoMes.getId()
+            ));
+
+            // A cada parcela incrementa um mês
+            dataLancamentoParcela.plusMonths(1);
+        }
+    }
+
+    private void pagarComVouncher(BigDecimal valorTotal, String lancamentoId, Cartao cartao){
+        if (!(cartao instanceof CartaoVouncher vouncher)) {
+            throw new BusinessException("O cartão selecionado não é Vouncher!");
+        }
+
+        // TO-DO: referenciar historico real
+        HistoricoVouncher historicoVouncher = new HistoricoVouncher();
+
+        // Registrar parcela única no dia da compra
+        parcelaService.cadastrar(new ParcelaReqDTO(
+            valorTotal,
+            lancamentoId,
+            LocalDate.now(),
+            historicoVouncher.getId()
+        ));
+    }
+
+    private void pagarOutrosMetodos(BigDecimal valorTotal, String lancamentoId) {
+        // Registrar parcela única no dia da compra
+        parcelaService.cadastrar(new ParcelaReqDTO(
+            valorTotal,
+            lancamentoId
+        ));
     }
 
     public Lancamento buscarEntidadePorId(String id) {

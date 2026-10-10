@@ -28,6 +28,13 @@ public class Parcela {
     public Parcela() {
     }
 
+    public Parcela(BigDecimal valorParcela, LocalDate dataLancamento, Lancamento lancamento) {
+        this.valorParcela = valorParcela;
+        this.dataLancamento = dataLancamento;
+        this.lancamento = lancamento;
+        this.registroDeDespesas = null;
+    }
+
     public Parcela(BigDecimal valorParcela, LocalDate dataLancamento, Lancamento lancamento, RegistroDeDespesas registroDeDespesas) {
         this.valorParcela = valorParcela;
         this.dataLancamento = dataLancamento;

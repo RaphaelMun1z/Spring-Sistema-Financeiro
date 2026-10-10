@@ -9,4 +9,11 @@ public record ParcelaReqDTO(
     LocalDate dataLancamento,
     String registroDeDespesasId
 ) {
+    public ParcelaReqDTO(BigDecimal valorParcela, String lancamentoId, LocalDate dataLancamento){
+        this(valorParcela, lancamentoId, dataLancamento, null);
+    }
+
+    public ParcelaReqDTO(BigDecimal valorParcela, String lancamentoId){
+        this(valorParcela, lancamentoId, LocalDate.now(), null);
+    }
 }

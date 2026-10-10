@@ -24,7 +24,9 @@ public class ParcelaService {
 
     public ParcelaResDTO cadastrar(ParcelaReqDTO data) {
         Lancamento lancamento = lancamentoRepository.findById(data.lancamentoId()).orElseThrow(() -> new NotFoundException("Lançamento não encontrado!"));
-        RegistroDeDespesas registro = registroDeDespesasService.buscarEntidadePorId(data.registroDeDespesasId());
+        RegistroDeDespesas registro = null;
+        if(!data.registroDeDespesasId().isEmpty())
+            registro = registroDeDespesasService.buscarEntidadePorId(data.registroDeDespesasId());
 
         Parcela parcela = new Parcela(
             data.valorParcela(),
