@@ -18,7 +18,9 @@ public record LancamentoReqDTO(
     String cartaoId
 ) {
     public LancamentoReqDTO {
-        if (metodoPagamento != MetodoPagamentoEnum.CARTAO) {
+        if (metodoPagamento != MetodoPagamentoEnum.CARTAO_CREDITO
+        && metodoPagamento != MetodoPagamentoEnum.CARTAO_DEBITO
+        && metodoPagamento != MetodoPagamentoEnum.VOUNCHER) {
             cartaoId = null;
         }
 

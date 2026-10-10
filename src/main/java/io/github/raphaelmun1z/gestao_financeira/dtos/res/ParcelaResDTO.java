@@ -17,7 +17,7 @@ public record ParcelaResDTO(
             parcela.getId(),
             parcela.getValorParcela(),
             parcela.getLancamento().getId(),
-            parcela.getRegistroDeDespesas().getId(),
+            parcela.getRegistroDeDespesas() != null ? parcela.getRegistroDeDespesas().getId() : null,
             parcela.getDataLancamento()
         );
     }

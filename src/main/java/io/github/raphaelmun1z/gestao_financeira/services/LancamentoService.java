@@ -95,7 +95,8 @@ public class LancamentoService {
 
     private void pagarComCartaoDeDebito(BigDecimal valorTotal, String lancamentoId, Cartao cartao) {
         if (!(cartao instanceof CartaoPadrao cartaoDebito)
-            || (cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.DEBITO)) {
+            || (cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.DEBITO
+            && cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO_E_DEBITO)) {
             throw new BusinessException("O cartão selecionado não é de Débito!");
         }
 
