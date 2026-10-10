@@ -13,6 +13,8 @@ import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundExcept
 import io.github.raphaelmun1z.gestao_financeira.repositories.CartaoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CartaoService {
     private final CartaoRepository repository;
@@ -58,5 +60,20 @@ public class CartaoService {
     public Cartao buscarEntidadePorId(String id) {
         return repository.findById(id)
             .orElseThrow(() -> new NotFoundException("Cartão não encontrado!"));
+    }
+
+    public List<CartaoResDTO> consultarTodos() {
+        return repository.findAll().stream()
+            .<CartaoResDTO>map(cartao -> {
+                if (cartao instanceof CartaoPadrao p) {
+                    return new CartaoPadraoResDTO(p);
+                }
+
+                if (cartao instanceof CartaoVouncher v) {
+                    return new CartaoVouncherResDTO(v);
+                }
+
+                throw new IllegalStateException("Tipo de cartão desconhecido.");
+            }).toList();
     }
 }

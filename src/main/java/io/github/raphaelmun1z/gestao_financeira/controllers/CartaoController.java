@@ -5,10 +5,9 @@ import io.github.raphaelmun1z.gestao_financeira.dtos.res.CartaoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.services.CartaoService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/cartoes")
@@ -22,5 +21,10 @@ public class CartaoController {
     @PostMapping
     public ResponseEntity<CartaoResDTO> cadastrar(@RequestBody @Valid CartaoReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<CartaoResDTO>> consultarTodos() {
+        return ResponseEntity.ok(service.consultarTodos());
     }
 }

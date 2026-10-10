@@ -1,8 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-public interface CartaoResDTO {
+public sealed interface CartaoResDTO permits CartaoPadraoResDTO, CartaoVouncherResDTO {
     String apelido();
     String contaBancariaId();
 }

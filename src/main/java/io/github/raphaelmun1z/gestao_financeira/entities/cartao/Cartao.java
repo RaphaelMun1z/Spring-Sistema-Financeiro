@@ -4,7 +4,11 @@ import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "tb_cartoes")
+@Table(name = "tb_cartoes",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"conta_bancaria_id", "apelido"})
+    }
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Cartao {
     @Id

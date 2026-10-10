@@ -122,15 +122,11 @@ public class LancamentoService {
         for (int mes = 1; mes <= qntParcelas; mes++) {
             dataLancamentoParcela = LocalDate.now().plusMonths(mes).withDayOfMonth(diaFechamentoFatura + 1);
 
-            // Busca fatura do mês referência
-            // TO-DO: busca fatura real
-            Fatura faturaDoMes = new Fatura();
-
             parcelaService.cadastrar(new ParcelaReqDTO(
                 valorParcela,
                 lancamentoId,
                 dataLancamentoParcela,
-                faturaDoMes.getId()
+                null
             ));
 
             // A cada parcela incrementa um mês
