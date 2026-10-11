@@ -7,18 +7,25 @@ import java.time.YearMonth;
 
 
 @Entity
-@Table(name = "tb_orcamentos")
+@Table(
+    name = "tb_orcamentos",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"mes_referencia", "categoria_id"})
+    }
+)
 public class Orcamento {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(name = "mes_referencia", nullable = false)
     private YearMonth mesReferencia;
+
     private BigDecimal valorLimite;
     private BigDecimal valorCorrente;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = false)
     private CategoriaDeMovimentacao categoria;
 
     public Orcamento() {

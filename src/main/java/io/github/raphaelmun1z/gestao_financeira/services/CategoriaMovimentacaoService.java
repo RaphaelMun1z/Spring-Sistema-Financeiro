@@ -38,4 +38,8 @@ public class CategoriaMovimentacaoService {
     public List<CategoriaMovimentacaoResDTO> consultarTodos() {
         return repository.findAll().stream().map(CategoriaMovimentacaoResDTO::new).toList();
     }
+
+    public CategoriaMovimentacaoResDTO consultarPorId(String categoriaId) {
+        return new CategoriaMovimentacaoResDTO(buscarEntidadePorId(categoriaId));
+    }
 }

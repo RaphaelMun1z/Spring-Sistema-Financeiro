@@ -6,8 +6,7 @@ import java.math.BigDecimal;
 
 public record OrcamentoReqDTO(
     @NotNull(message = "O 'valorLimite' é obrigatório!") BigDecimal valorLimite,
-    BigDecimal valorCorrente,
-    @NotNull(message = "A 'categoriaId' é obrigatória!") String categoriaId
+    BigDecimal valorCorrente
 ) {
     public OrcamentoReqDTO {
         if (valorCorrente == null) {

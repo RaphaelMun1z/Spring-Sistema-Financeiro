@@ -4,17 +4,23 @@ import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
-@Table(name = "tb_contas_bancarias")
+@Table(
+    name = "tb_contas_bancarias",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"nome_do_banco", "titular_id"})
+    }
+)
 public class ContaBancaria {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(unique = true)
+    @Column(name = "nome_do_banco", nullable = false)
     private String nomeDoBanco;
 
     private BigDecimal saldoCorrente;
@@ -22,11 +28,11 @@ public class ContaBancaria {
     private BigDecimal creditoRestante;
 
     @ManyToOne
-    @JoinColumn(name = "titular_id")
+    @JoinColumn(name = "titular_id", nullable = false)
     private Usuario titular;
 
     @OneToMany(mappedBy = "contaBancaria")
-    private Set<Cartao> cartoes;
+    private final Set<Cartao> cartoes = new HashSet<>();
 
     public ContaBancaria() {
     }

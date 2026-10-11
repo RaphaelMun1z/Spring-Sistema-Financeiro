@@ -3,6 +3,7 @@ package io.github.raphaelmun1z.gestao_financeira.entities;
 import io.github.raphaelmun1z.gestao_financeira.entities.enums.TipoCategoriaEnum;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -12,7 +13,9 @@ public class CategoriaDeMovimentacao {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(unique = true)
     private String nome;
+
     private TipoCategoriaEnum tipo;
     private String cor;
     private String icone;
@@ -22,7 +25,7 @@ public class CategoriaDeMovimentacao {
     private Usuario autor;
 
     @OneToMany(mappedBy = "categoria")
-    private Set<Orcamento> orcamentos;
+    private final Set<Orcamento> orcamentos = new HashSet<>();;
 
     public CategoriaDeMovimentacao() {
     }

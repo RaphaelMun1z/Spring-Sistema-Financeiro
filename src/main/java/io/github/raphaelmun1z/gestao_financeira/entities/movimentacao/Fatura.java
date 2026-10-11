@@ -6,25 +6,35 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tb_faturas")
+@Table(
+    name = "tb_faturas",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"data_referencia", "cartao_credito_id"})
+    }
+)
 public class Fatura {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     private BigDecimal valorTotal;
+
+    @Column(name = "data_referencia", nullable = false)
     private YearMonth dataReferencia;
+
+    @Enumerated(EnumType.STRING)
     private StatusFaturaEnum status;
 
     @ManyToOne
-    @JoinColumn(name = "cartao_credito_id")
+    @JoinColumn(name = "cartao_credito_id", nullable = false)
     private CartaoCredito cartaoDeCredito;
 
     @OneToMany(mappedBy = "fatura")
-    private Set<Lancamento> lancamentos;
+    private final Set<Lancamento> lancamentos = new HashSet<>();
 
     public Fatura() {
     }
@@ -33,14 +43,12 @@ public class Fatura {
         BigDecimal valorTotal,
         YearMonth dataReferencia,
         StatusFaturaEnum status,
-        CartaoCredito cartaoDeCredito,
-        Set<Lancamento> lancamentos
+        CartaoCredito cartaoDeCredito
     ) {
         this.valorTotal = valorTotal;
         this.dataReferencia = dataReferencia;
         this.status = status;
         this.cartaoDeCredito = cartaoDeCredito;
-        this.lancamentos = lancamentos;
     }
 
     public String getId() {

@@ -6,20 +6,27 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tb_investimentos")
+@Table(
+    name = "tb_investimentos",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"categoria", "investidor_id"})
+    }
+)
 public class Investimento {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(nullable = false)
     private String categoria;
+
     private LocalDate dataInicio;
     private BigDecimal valorInicial;
     private BigDecimal valorCorrente;
     private Float jurosAoMes;
 
     @ManyToOne
-    @JoinColumn(name = "investidor_id")
+    @JoinColumn(name = "investidor_id", nullable = false)
     private Usuario investidor;
 
     public Investimento() {

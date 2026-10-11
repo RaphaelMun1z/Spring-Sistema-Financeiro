@@ -5,21 +5,27 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.YearMonth;
 
-
 @Entity
-@Table(name = "tb_metas_financeiras")
+@Table(
+    name = "tb_metas_financeiras",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"objetivo", "criador_id"})
+    }
+)
 public class MetaFinanceira {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(nullable = false)
     private String objetivo;
+
     private BigDecimal valorAlvo;
     private BigDecimal valorAcumulado;
     private YearMonth dataConclusaoPrevista;
 
     @ManyToOne
-    @JoinColumn(name = "criador_id")
+    @JoinColumn(name = "criador_id", nullable = false)
     private Usuario criador;
 
     public MetaFinanceira() {

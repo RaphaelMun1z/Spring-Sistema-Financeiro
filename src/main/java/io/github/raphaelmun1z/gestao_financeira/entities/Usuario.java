@@ -24,16 +24,16 @@ public class Usuario implements UserDetails {
     private PapelDoUsuarioEnum papel;
 
     @OneToMany(mappedBy = "autor")
-    private Set<CategoriaDeMovimentacao> categoriasDeMovimentacao = new HashSet<>();
+    private final Set<CategoriaDeMovimentacao> categoriasDeMovimentacao = new HashSet<>();
 
     @OneToMany(mappedBy = "investidor")
-    private Set<Investimento> investimentos = new HashSet<>();
+    private final Set<Investimento> investimentos = new HashSet<>();
 
     @OneToMany(mappedBy = "titular")
-    private Set<ContaBancaria> contasBancarias = new HashSet<>();
+    private final Set<ContaBancaria> contasBancarias = new HashSet<>();
 
     @OneToMany(mappedBy = "criador")
-    private List<MetaFinanceira> metasFinanceiras = new ArrayList<>();
+    private final List<MetaFinanceira> metasFinanceiras = new ArrayList<>();
 
     public Usuario() {
     }

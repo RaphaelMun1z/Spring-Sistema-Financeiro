@@ -22,8 +22,8 @@ public class OrcamentoService {
     }
 
     @Transactional
-    public OrcamentoResDTO cadastrar(OrcamentoReqDTO data) {
-        CategoriaDeMovimentacao categoria = categoriaMovimentacaoService.buscarEntidadePorId(data.categoriaId());
+    public OrcamentoResDTO cadastrar(String categoriaId, OrcamentoReqDTO data) {
+        CategoriaDeMovimentacao categoria = categoriaMovimentacaoService.buscarEntidadePorId(categoriaId);
 
         Orcamento novoObj = new Orcamento(
             YearMonth.now(),
@@ -34,7 +34,7 @@ public class OrcamentoService {
         return new OrcamentoResDTO(repository.save(novoObj));
     }
 
-    public List<OrcamentoResDTO> consultarTodos() {
-        return repository.findAll().stream().map(OrcamentoResDTO::new).toList();
+    public List<OrcamentoResDTO> consultarPorCategoria(String categoriaId) {
+        return repository.findByCategoriaId(categoriaId).stream().map(OrcamentoResDTO::new).toList();
     }
 }

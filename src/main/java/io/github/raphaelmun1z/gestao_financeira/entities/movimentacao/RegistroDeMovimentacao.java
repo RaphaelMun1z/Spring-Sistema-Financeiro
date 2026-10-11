@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -41,7 +42,8 @@ public class RegistroDeMovimentacao {
         cascade = CascadeType.ALL,
         orphanRemoval = true
     )
-    private Set<Lancamento> lancamentos;
+    private final Set<Lancamento> lancamentos = new HashSet<>();
+    ;
 
     public RegistroDeMovimentacao() {
     }
@@ -55,8 +57,7 @@ public class RegistroDeMovimentacao {
         Integer quantidadeParcelas,
         CategoriaDeMovimentacao categoria,
         ContaBancaria contaBancaria,
-        Cartao cartao,
-        Set<Lancamento> lancamentos
+        Cartao cartao
     ) {
         this.valorTotal = valorTotal;
         this.dataLancamento = dataLancamento;
@@ -67,7 +68,6 @@ public class RegistroDeMovimentacao {
         this.categoria = categoria;
         this.contaBancaria = contaBancaria;
         this.cartao = cartao;
-        this.lancamentos = lancamentos;
     }
 
     public String getId() {
