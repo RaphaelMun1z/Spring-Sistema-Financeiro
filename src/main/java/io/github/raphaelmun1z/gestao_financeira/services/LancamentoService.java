@@ -1,166 +1,88 @@
 package io.github.raphaelmun1z.gestao_financeira.services;
 
+import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaExtratoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LancamentoReqDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.req.ParcelaReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.LancamentoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.*;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoPadraoEnum;
-import io.github.raphaelmun1z.gestao_financeira.entities.cartao.enums.TipoCartaoVouncherEnum;
-import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.MetodoPagamentoEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.Fatura;
+import io.github.raphaelmun1z.gestao_financeira.entities.Lancamento;
+import io.github.raphaelmun1z.gestao_financeira.entities.RegistroDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
-import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class LancamentoService {
     private final LancamentoRepository repository;
-    private final ContaBancariaService contaBancariaService;
-    private final CategoriaMovimentacaoService categoriaMovimentacaoService;
-    private final CartaoService cartaoService;
-    private final ParcelaService parcelaService;
+    private final RegistroDeMovimentacaoService registroDeMovimentacaoService;
     private final FaturaService faturaService;
 
-    public LancamentoService(LancamentoRepository repository, ContaBancariaService contaBancariaService, CategoriaMovimentacaoService categoriaMovimentacaoService, CartaoService cartaoService, ParcelaService parcelaService, FaturaService faturaService) {
+    public LancamentoService(
+        LancamentoRepository repository,
+        RegistroDeMovimentacaoService registroDeMovimentacaoService,
+        FaturaService faturaService
+    ) {
         this.repository = repository;
-        this.contaBancariaService = contaBancariaService;
-        this.categoriaMovimentacaoService = categoriaMovimentacaoService;
-        this.cartaoService = cartaoService;
-        this.parcelaService = parcelaService;
+        this.registroDeMovimentacaoService = registroDeMovimentacaoService;
         this.faturaService = faturaService;
     }
 
     public LancamentoResDTO cadastrar(LancamentoReqDTO data) {
-        validaDadosCartao(data);
+        validarDados(data);
 
-        Lancamento lancamento = geraLancamento(data);
-
-        Cartao cartao = defineCartao(data, lancamento);
-
-        Lancamento lancamentoSalvo = repository.save(lancamento);
-
-        int quantidadeParcelas = data.quantidadeParcelas() != null ? data.quantidadeParcelas() : 1;
-
-        switch (data.metodoPagamento()) {
-            case CARTAO_DEBITO -> pagarComCartaoDeDebito(data.valorTotal(), lancamentoSalvo.getId(), cartao);
-            case CARTAO_CREDITO -> pagarComCartaoDeCredito(data.valorTotal(), lancamentoSalvo.getId(), cartao, quantidadeParcelas);
-            case VOUNCHER -> pagarComVouncher(data.valorTotal(), lancamentoSalvo.getId(), cartao);
-            default -> pagarOutrosMetodos(data.valorTotal(), lancamentoSalvo.getId());
+        if (data.registroDeMovimentacaoId() != null) {
+            return geraLancamentoMovimentacao(data);
         }
 
+        if (data.faturaId() != null) {
+            return geraLancamentoFatura(data);
+        }
+
+        throw new BusinessException("Não foram passados os dados necessários para o cadastro do lançamento.");
+    }
+
+    private @NonNull LancamentoResDTO geraLancamentoFatura(LancamentoReqDTO data) {
+        Fatura fatura = faturaService.consultarEntidadePorId(data.faturaId());
+
+        Lancamento lancamento = new Lancamento(
+            data.valor(),
+            data.dataLancamento(),
+            null,
+            fatura
+        );
+
+        Lancamento lancamentoSalvo = repository.save(lancamento);
         return new LancamentoResDTO(lancamentoSalvo);
     }
 
-    private @Nullable Cartao defineCartao(LancamentoReqDTO data, Lancamento lancamento) {
-        Cartao cartao = null;
-        if (data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_CREDITO
-        || data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_DEBITO) {
-            cartao = cartaoService.buscarEntidadePorId(data.cartaoId());
-            lancamento.setCartao(cartao);
-        }
-        return cartao;
-    }
+    private @NonNull LancamentoResDTO geraLancamentoMovimentacao(LancamentoReqDTO data) {
+        RegistroDeMovimentacao registroDeMovimentacao = registroDeMovimentacaoService.consultarEntidadePorId(data.registroDeMovimentacaoId());
 
-    private @NonNull Lancamento geraLancamento(LancamentoReqDTO data) {
-        ContaBancaria contaBancaria = contaBancariaService.buscarEntidadePorId(data.contaBancariaId());
-        CategoriaDeMovimentacao categoriaDeMovimentacao = categoriaMovimentacaoService.buscarEntidadePorId(data.categoriaId());
-        return new Lancamento(
-            contaBancaria,
-            categoriaDeMovimentacao,
-            data.ehRecorrente(),
-            data.quantidadeParcelas(),
-            data.metodoPagamento(),
-            data.descricao(),
+        Lancamento lancamento = new Lancamento(
+            data.valor(),
             data.dataLancamento(),
-            data.valorTotal()
+            registroDeMovimentacao,
+            null
         );
+
+        Lancamento lancamentoSalvo = repository.save(lancamento);
+        return new LancamentoResDTO(lancamentoSalvo);
     }
 
-    private static void validaDadosCartao(LancamentoReqDTO data) {
-        if ((data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_CREDITO
-            || data.metodoPagamento() == MetodoPagamentoEnum.CARTAO_DEBITO)
-            && (data.cartaoId() == null)) {
-            throw new BusinessException("É necessário informar o 'cartaoId' para registrar um lançamento com cartão!");
+    private static void validarDados(LancamentoReqDTO data) {
+        if (data.registroDeMovimentacaoId() == null && data.faturaId() == null) {
+            throw new IllegalArgumentException("É necessário vincular o lançamento à um registro de movimentação ou à uma fatura.");
+        }
+
+        if (data.registroDeMovimentacaoId() != null && data.faturaId() != null) {
+            throw new IllegalArgumentException("O lançamento deve estar associado a apenas uma das opções - registro de movimentação OU fatura.");
         }
     }
 
-    private void pagarComCartaoDeDebito(BigDecimal valorTotal, String lancamentoId, Cartao cartao) {
-        if (!(cartao instanceof CartaoPadrao cartaoDebito)
-            || (cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.DEBITO
-            && cartaoDebito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO_E_DEBITO)) {
-            throw new BusinessException("O cartão selecionado não é de Débito!");
-        }
-
-        // Registrar parcela única no dia da compra
-        parcelaService.cadastrar(new ParcelaReqDTO(
-            valorTotal,
-            lancamentoId
-        ));
-    }
-
-    private void pagarComCartaoDeCredito(BigDecimal valorTotal, String lancamentoId, Cartao cartao, int qntParcelas) {
-        if (!(cartao instanceof CartaoPadrao cartaoCredito)
-            || (cartaoCredito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO
-            && cartaoCredito.getTipoCartao() != TipoCartaoPadraoEnum.CREDITO_E_DEBITO)) {
-            throw new BusinessException("O cartão selecionado não é de Crédito!");
-        }
-
-        // Obtém dados do cartão
-        int diaFechamentoFatura = cartaoCredito.getDiaFechamento();
-        BigDecimal valorParcela = valorTotal.divide(BigDecimal.valueOf(qntParcelas), RoundingMode.CEILING);
-
-        LocalDate dataLancamentoParcela;
-        for (int mes = 1; mes <= qntParcelas; mes++) {
-            dataLancamentoParcela = LocalDate.now().plusMonths(mes).withDayOfMonth(diaFechamentoFatura + 1);
-
-            parcelaService.cadastrar(new ParcelaReqDTO(
-                valorParcela,
-                lancamentoId,
-                dataLancamentoParcela,
-                null
-            ));
-
-            // A cada parcela incrementa um mês
-            dataLancamentoParcela.plusMonths(1);
-        }
-    }
-
-    private void pagarComVouncher(BigDecimal valorTotal, String lancamentoId, Cartao cartao){
-        if (!(cartao instanceof CartaoVouncher vouncher)) {
-            throw new BusinessException("O cartão selecionado não é Vouncher!");
-        }
-
-        // TO-DO: referenciar historico real
-        HistoricoVouncher historicoVouncher = new HistoricoVouncher();
-
-        // Registrar parcela única no dia da compra
-        parcelaService.cadastrar(new ParcelaReqDTO(
-            valorTotal,
-            lancamentoId,
-            LocalDate.now(),
-            historicoVouncher.getId()
-        ));
-    }
-
-    private void pagarOutrosMetodos(BigDecimal valorTotal, String lancamentoId) {
-        // Registrar parcela única no dia da compra
-        parcelaService.cadastrar(new ParcelaReqDTO(
-            valorTotal,
-            lancamentoId
-        ));
-    }
-
-    public Lancamento buscarEntidadePorId(String id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new NotFoundException("Lançamento não encontrado!"));
+    public List<LancamentoResDTO> consultarExtratoPorPeriodo(ConsultaExtratoReqDTO data) {
+        List<Lancamento> lancamentos = repository.findByDataLancamentoBetween(data.dataInicial(), data.dataFinal());
+        return lancamentos.stream().map(LancamentoResDTO::new).toList();
     }
 }

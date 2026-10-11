@@ -1,6 +1,5 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.req;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;

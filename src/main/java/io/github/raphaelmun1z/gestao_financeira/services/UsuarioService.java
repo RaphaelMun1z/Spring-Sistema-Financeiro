@@ -1,7 +1,7 @@
 package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.UserDetailsResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.UsuarioRepository;
 import org.springframework.dao.DataIntegrityViolationException;

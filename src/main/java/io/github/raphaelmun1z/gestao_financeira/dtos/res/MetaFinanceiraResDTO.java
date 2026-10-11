@@ -1,6 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.meta.MetaFinanceira;
+import io.github.raphaelmun1z.gestao_financeira.entities.MetaFinanceira;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

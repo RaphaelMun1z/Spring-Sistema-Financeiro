@@ -2,8 +2,8 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.OrcamentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.OrcamentoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
-import io.github.raphaelmun1z.gestao_financeira.entities.orcamento.Orcamento;
+import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.entities.Orcamento;
 import io.github.raphaelmun1z.gestao_financeira.repositories.OrcamentoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

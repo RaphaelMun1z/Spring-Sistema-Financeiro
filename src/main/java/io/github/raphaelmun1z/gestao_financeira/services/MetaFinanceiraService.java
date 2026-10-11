@@ -2,7 +2,7 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.MetaFinanceiraReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.MetaFinanceiraResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.meta.MetaFinanceira;
+import io.github.raphaelmun1z.gestao_financeira.entities.MetaFinanceira;
 import io.github.raphaelmun1z.gestao_financeira.repositories.MetaFinanceiraRepository;
 import org.springframework.stereotype.Service;
 

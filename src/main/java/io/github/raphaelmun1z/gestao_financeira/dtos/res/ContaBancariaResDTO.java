@@ -1,7 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
 
 import java.math.BigDecimal;
 

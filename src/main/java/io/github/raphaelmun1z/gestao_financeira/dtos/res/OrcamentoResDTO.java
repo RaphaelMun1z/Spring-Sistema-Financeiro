@@ -1,7 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
-import io.github.raphaelmun1z.gestao_financeira.entities.orcamento.Orcamento;
+import io.github.raphaelmun1z.gestao_financeira.entities.Orcamento;
 
 import java.math.BigDecimal;
 import java.time.YearMonth;

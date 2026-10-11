@@ -2,7 +2,7 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CategoriaDeMovimentacaoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.CategoriaDeMovimentacaoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.CategoriaDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.CategoriaMovimentacaoRepository;
 import org.springframework.stereotype.Service;

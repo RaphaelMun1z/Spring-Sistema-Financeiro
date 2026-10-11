@@ -1,6 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.req;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.TipoCategoriaEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.enums.TipoCategoriaEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

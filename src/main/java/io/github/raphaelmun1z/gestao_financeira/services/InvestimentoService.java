@@ -2,7 +2,7 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.InvestimentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.InvestimentoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.investimento.Investimento;
+import io.github.raphaelmun1z.gestao_financeira.entities.Investimento;
 import io.github.raphaelmun1z.gestao_financeira.repositories.InvestimentoRepository;
 import org.springframework.stereotype.Service;
 

@@ -1,6 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;

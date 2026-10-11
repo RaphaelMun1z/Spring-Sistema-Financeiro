@@ -1,7 +1,7 @@
 package io.github.raphaelmun1z.gestao_financeira.config;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
-import io.github.raphaelmun1z.gestao_financeira.entities.usuario.enums.PapelDoUsuarioEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
+import io.github.raphaelmun1z.gestao_financeira.entities.enums.PapelDoUsuarioEnum;
 import io.github.raphaelmun1z.gestao_financeira.repositories.UsuarioRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;

@@ -1,6 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.cartao;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.conta.ContaBancaria;
+import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
 import jakarta.persistence.*;
 
 @Entity

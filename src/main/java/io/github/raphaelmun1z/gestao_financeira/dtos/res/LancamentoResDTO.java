@@ -1,35 +1,19 @@
 package io.github.raphaelmun1z.gestao_financeira.dtos.res;
 
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
-import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.enums.MetodoPagamentoEnum;
+import io.github.raphaelmun1z.gestao_financeira.entities.Lancamento;
+import io.github.raphaelmun1z.gestao_financeira.entities.RegistroDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.entities.enums.MetodoPagamentoEnum;
+import org.springframework.cglib.core.Local;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record LancamentoResDTO(
-    String id,
-    BigDecimal valorTotal,
+    BigDecimal valor,
     LocalDate dataLancamento,
-    String descricao,
-    MetodoPagamentoEnum metodoPagamento,
-    Boolean ehRecorrente,
-    String categoria,
-    String nomeBanco,
-    String apelidoCartao
+    String descricao
 ) {
-    public LancamentoResDTO(Lancamento lancamento) {
-        this(
-            lancamento.getId(),
-            lancamento.getValorTotal(),
-            lancamento.getDataLancamento(),
-            lancamento.getDescricao(),
-            lancamento.getMetodoPagamento(),
-            lancamento.getEhRecorrente(),
-            lancamento.getCategoria().getNome(),
-            lancamento.getContaBancaria().getNomeDoBanco(),
-            lancamento.getCartao() != null
-                ? lancamento.getCartao().getApelido()
-                : null
-        );
+    public LancamentoResDTO(Lancamento l) {
+        this(l.getValor(), l.getDataLancamento(), l.getRegistroDeMovimentacao().getDescricao());
     }
 }

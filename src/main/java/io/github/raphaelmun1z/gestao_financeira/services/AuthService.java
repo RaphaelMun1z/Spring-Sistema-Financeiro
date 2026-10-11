@@ -3,7 +3,7 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 import io.github.raphaelmun1z.gestao_financeira.dtos.TokenDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LoginReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.LoginResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.usuario.Usuario;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
 import io.github.raphaelmun1z.gestao_financeira.infra.security.TokenService;
 import io.github.raphaelmun1z.gestao_financeira.repositories.UsuarioRepository;
 import org.springframework.security.authentication.AuthenticationManager;
