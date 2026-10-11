@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.YearMonth;
+import java.util.List;
 
 @Service
 public class OrcamentoService {
@@ -31,5 +32,9 @@ public class OrcamentoService {
             categoria
         );
         return new OrcamentoResDTO(repository.save(novoObj));
+    }
+
+    public List<OrcamentoResDTO> consultarTodos() {
+        return repository.findAll().stream().map(OrcamentoResDTO::new).toList();
     }
 }

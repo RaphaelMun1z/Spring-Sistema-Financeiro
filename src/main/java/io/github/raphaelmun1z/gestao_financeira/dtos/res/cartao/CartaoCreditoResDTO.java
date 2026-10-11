@@ -1,4 +1,4 @@
-package io.github.raphaelmun1z.gestao_financeira.dtos.res;
+package io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.CartaoCredito;
 

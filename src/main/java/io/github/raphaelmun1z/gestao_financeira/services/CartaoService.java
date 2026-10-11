@@ -1,10 +1,10 @@
 package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CartaoReqDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.CartaoCreditoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.CartaoDebitoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.CartaoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.CartaoVoucherResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoCreditoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoDebitoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoVoucherResDTO;
 import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.CartaoCredito;

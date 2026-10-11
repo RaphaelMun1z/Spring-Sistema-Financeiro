@@ -7,11 +7,10 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public record RegistroDeMovimentacaoReqDTO(
+public record RegistroMovimentacaoReqDTO(
     @NotNull(message = "O valor total é obrigatório!") BigDecimal valorTotal,
     @NotNull(message = "O método de pagamento é obrigatório!") MetodoPagamentoEnum metodoPagamento,
     @NotBlank(message = "A categoria é obrigatória!") String categoriaId,
-    @NotNull(message = "A conta bancária é obrigatória!") String contaBancariaId,
     LocalDate dataLancamento,
     String descricao,
     Boolean ehRecorrente,

@@ -1,7 +1,7 @@
 package io.github.raphaelmun1z.gestao_financeira.entities.cartao;
 
 import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
-import io.github.raphaelmun1z.gestao_financeira.entities.Fatura;
+import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Fatura;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;

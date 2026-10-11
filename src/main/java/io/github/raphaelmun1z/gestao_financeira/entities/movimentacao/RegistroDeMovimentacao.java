@@ -1,5 +1,7 @@
-package io.github.raphaelmun1z.gestao_financeira.entities;
+package io.github.raphaelmun1z.gestao_financeira.entities.movimentacao;
 
+import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
 import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
 import io.github.raphaelmun1z.gestao_financeira.entities.enums.MetodoPagamentoEnum;
 import jakarta.persistence.*;

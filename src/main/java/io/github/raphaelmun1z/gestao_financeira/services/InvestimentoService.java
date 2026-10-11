@@ -2,9 +2,12 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.InvestimentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.InvestimentoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.Investimento;
 import io.github.raphaelmun1z.gestao_financeira.repositories.InvestimentoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class InvestimentoService {
@@ -23,5 +26,9 @@ public class InvestimentoService {
             data.jurosAoMes()
         );
         return new InvestimentoResDTO(repository.save(novoObj));
+    }
+
+    public List<InvestimentoResDTO> consultarTodos() {
+        return repository.findAll().stream().map(InvestimentoResDTO::new).toList();
     }
 }

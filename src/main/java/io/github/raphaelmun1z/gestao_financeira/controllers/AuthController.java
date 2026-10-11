@@ -1,8 +1,8 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LoginReqDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.LoginResDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.UserDetailsResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.auth.LoginResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.auth.UserDetailsResDTO;
 import io.github.raphaelmun1z.gestao_financeira.services.AuthService;
 import io.github.raphaelmun1z.gestao_financeira.services.UsuarioService;
 import jakarta.validation.Valid;

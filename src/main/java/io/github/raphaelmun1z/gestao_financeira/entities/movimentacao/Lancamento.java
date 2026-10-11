@@ -1,4 +1,4 @@
-package io.github.raphaelmun1z.gestao_financeira.entities;
+package io.github.raphaelmun1z.gestao_financeira.entities.movimentacao;
 
 import jakarta.persistence.*;
 

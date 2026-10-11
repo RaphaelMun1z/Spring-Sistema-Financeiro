@@ -1,11 +1,11 @@
 package io.github.raphaelmun1z.gestao_financeira.services;
 
-import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaExtratoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LancamentoReqDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.LancamentoResDTO;
-import io.github.raphaelmun1z.gestao_financeira.entities.Fatura;
-import io.github.raphaelmun1z.gestao_financeira.entities.Lancamento;
-import io.github.raphaelmun1z.gestao_financeira.entities.RegistroDeMovimentacao;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.LancamentoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Fatura;
+import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
+import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.RegistroDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
 import org.jspecify.annotations.NonNull;
@@ -81,7 +81,7 @@ public class LancamentoService {
         }
     }
 
-    public List<LancamentoResDTO> consultarExtratoPorPeriodo(ConsultaExtratoReqDTO data) {
+    public List<LancamentoResDTO> consultarPorPeriodo(String contaBancariaId, ConsultaPorPeriodoReqDTO data) {
         List<Lancamento> lancamentos = repository.findByDataLancamentoBetween(data.dataInicial(), data.dataFinal());
         return lancamentos.stream().map(LancamentoResDTO::new).toList();
     }
