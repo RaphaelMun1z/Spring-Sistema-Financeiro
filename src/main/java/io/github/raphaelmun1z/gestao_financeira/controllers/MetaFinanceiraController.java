@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.MetaFinanceiraControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.MetaFinanceiraReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.MetaFinanceiraResDTO;
 import io.github.raphaelmun1z.gestao_financeira.services.MetaFinanceiraService;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/metas-financeiras")
-public class MetaFinanceiraController {
+public class MetaFinanceiraController implements MetaFinanceiraControllerContract {
     private final MetaFinanceiraService service;
 
     public MetaFinanceiraController(MetaFinanceiraService service) {

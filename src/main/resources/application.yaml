@@ -29,5 +29,6 @@ management:
     health:
       show-details: always
 
-cors:
-  originPatterns: ${CORS_ORIGINS:http://localhost:4200,http://localhost:3000}
+app:
+  cors:
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200,http://localhost:3000}

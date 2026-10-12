@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.CategoriaMovimentacaoControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CategoriaDeMovimentacaoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.OrcamentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.CategoriaMovimentacaoResDTO;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categorias-movimentacao")
-public class CategoriaMovimentacaoController {
+public class CategoriaMovimentacaoController implements CategoriaMovimentacaoControllerContract {
     private final CategoriaMovimentacaoService service;
     private final OrcamentoService orcamentoService;
 

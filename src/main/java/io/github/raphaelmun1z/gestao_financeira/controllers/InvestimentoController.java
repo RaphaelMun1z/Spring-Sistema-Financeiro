@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.InvestimentoControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.InvestimentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.InvestimentoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.services.InvestimentoService;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/investimentos")
-public class InvestimentoController {
+public class InvestimentoController implements InvestimentoControllerContract {
     private final InvestimentoService service;
 
     public InvestimentoController(InvestimentoService service) {

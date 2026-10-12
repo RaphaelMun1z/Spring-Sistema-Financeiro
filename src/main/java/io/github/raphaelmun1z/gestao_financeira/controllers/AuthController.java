@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.AuthControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LoginReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.auth.LoginResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.auth.UserDetailsResDTO;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthControllerContract {
     private final AuthService service;
     private final UsuarioService usuarioService;
 

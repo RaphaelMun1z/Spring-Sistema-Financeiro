@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.CartaoControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CartaoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO;
@@ -14,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cartoes")
-public class CartaoController {
+public class CartaoController implements CartaoControllerContract {
     private final CartaoService service;
     private final FaturaService faturaService;
 

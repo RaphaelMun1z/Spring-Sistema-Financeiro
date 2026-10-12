@@ -1,5 +1,6 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers;
 
+import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.ContaBancariaControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ContaBancariaReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.RegistroMovimentacaoReqDTO;
@@ -17,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/contas-bancarias")
-public class ContaBancariaController {
+public class ContaBancariaController implements ContaBancariaControllerContract {
     private final ContaBancariaService service;
     private final RegistroDeMovimentacaoService registroDeMovimentacaoService;
     private final LancamentoService lancamentoService;
