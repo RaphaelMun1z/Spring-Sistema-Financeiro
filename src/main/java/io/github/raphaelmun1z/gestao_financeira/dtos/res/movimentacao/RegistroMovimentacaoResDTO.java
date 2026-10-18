@@ -13,7 +13,7 @@ public record RegistroMovimentacaoResDTO(
     String descricao,
     MetodoPagamentoEnum metodoPagamento,
     Boolean ehRecorrente,
-    int qntParcelas,
+    Integer qntParcelas,
     String categoriaId,
     String contaBancariaId
 ) {

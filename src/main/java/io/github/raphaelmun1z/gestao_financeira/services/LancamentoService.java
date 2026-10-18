@@ -2,45 +2,63 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LancamentoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.FaturaResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.LancamentoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Fatura;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.RegistroDeMovimentacao;
-import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
+import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.RegistroDeMovimentacaoRepository;
 import org.jspecify.annotations.NonNull;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class LancamentoService {
     private final LancamentoRepository repository;
-    private final RegistroDeMovimentacaoService registroDeMovimentacaoService;
+    private final RegistroDeMovimentacaoRepository registroDeMovimentacaoRepository;
     private final FaturaService faturaService;
 
     public LancamentoService(
         LancamentoRepository repository,
-        RegistroDeMovimentacaoService registroDeMovimentacaoService,
+        RegistroDeMovimentacaoRepository registroDeMovimentacaoRepository,
         FaturaService faturaService
     ) {
         this.repository = repository;
-        this.registroDeMovimentacaoService = registroDeMovimentacaoService;
+        this.registroDeMovimentacaoRepository = registroDeMovimentacaoRepository;
         this.faturaService = faturaService;
     }
 
     public LancamentoResDTO cadastrar(LancamentoReqDTO data) {
-        validarDados(data);
-
-        if (data.registroDeMovimentacaoId() != null) {
-            return geraLancamentoMovimentacao(data);
-        }
+        Lancamento lancamentoObj = null;
+        RegistroDeMovimentacao registroDeMovimentacao = registroDeMovimentacaoRepository.findById(data.registroDeMovimentacaoId())
+            .orElseThrow(() -> new NotFoundException("Registro de movimentação não encontrado!"));
 
         if (data.faturaId() != null) {
-            return geraLancamentoFatura(data);
+            // Consulta fatura do próximo mês
+            String cartaoId = registroDeMovimentacao.getCartao().getId();
+            Fatura faturaCartao = faturaService.obterProximaFaturaDoCartao(cartaoId);
+
+            lancamentoObj = new Lancamento(
+                data.valor(),
+                data.dataLancamento(),
+                registroDeMovimentacao,
+                faturaCartao
+            );
+        } else {
+            lancamentoObj = new Lancamento(
+                data.valor(),
+                data.dataLancamento(),
+                registroDeMovimentacao
+            );
         }
 
-        throw new BusinessException("Não foram passados os dados necessários para o cadastro do lançamento.");
+        Lancamento lancamentoSalvo = repository.save(lancamentoObj);
+        return new LancamentoResDTO(lancamentoSalvo);
     }
 
     private @NonNull LancamentoResDTO geraLancamentoFatura(LancamentoReqDTO data) {
@@ -55,30 +73,6 @@ public class LancamentoService {
 
         Lancamento lancamentoSalvo = repository.save(lancamento);
         return new LancamentoResDTO(lancamentoSalvo);
-    }
-
-    private @NonNull LancamentoResDTO geraLancamentoMovimentacao(LancamentoReqDTO data) {
-        RegistroDeMovimentacao registroDeMovimentacao = registroDeMovimentacaoService.consultarEntidadePorId(data.registroDeMovimentacaoId());
-
-        Lancamento lancamento = new Lancamento(
-            data.valor(),
-            data.dataLancamento(),
-            registroDeMovimentacao,
-            null
-        );
-
-        Lancamento lancamentoSalvo = repository.save(lancamento);
-        return new LancamentoResDTO(lancamentoSalvo);
-    }
-
-    private static void validarDados(LancamentoReqDTO data) {
-        if (data.registroDeMovimentacaoId() == null && data.faturaId() == null) {
-            throw new IllegalArgumentException("É necessário vincular o lançamento à um registro de movimentação ou à uma fatura.");
-        }
-
-        if (data.registroDeMovimentacaoId() != null && data.faturaId() != null) {
-            throw new IllegalArgumentException("O lançamento deve estar associado a apenas uma das opções - registro de movimentação OU fatura.");
-        }
     }
 
     public List<LancamentoResDTO> consultarPorPeriodo(String contaBancariaId, ConsultaPorPeriodoReqDTO data) {

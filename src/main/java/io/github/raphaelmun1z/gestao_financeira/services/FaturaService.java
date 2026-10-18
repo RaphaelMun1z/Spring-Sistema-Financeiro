@@ -31,4 +31,10 @@ public class FaturaService {
         List<Fatura> faturas = repository.findByDataReferenciaBetween(YearMonth.from(data.dataInicial()), YearMonth.from(data.dataFinal()));
         return faturas.stream().map(FaturaResDTO::new).toList();
     }
+
+    public Fatura obterProximaFaturaDoCartao(String cartaoId) {
+        YearMonth proximoMes = YearMonth.now().plusMonths(1);
+        return repository.findByCartaoDeCredito_IdAndDataReferencia(cartaoId, proximoMes)
+            .orElseThrow(() -> new NotFoundException("Fatura não encontrada!"));
+    }
 }

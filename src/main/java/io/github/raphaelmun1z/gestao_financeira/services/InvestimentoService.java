@@ -4,7 +4,10 @@ import io.github.raphaelmun1z.gestao_financeira.dtos.req.InvestimentoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.InvestimentoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.Investimento;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
 import io.github.raphaelmun1z.gestao_financeira.repositories.InvestimentoRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +21,16 @@ public class InvestimentoService {
     }
 
     public InvestimentoResDTO cadastrar(InvestimentoReqDTO data){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
+
         Investimento novoObj = new Investimento(
             data.categoria(),
             data.dataInicio(),
             data.valorInicial(),
             data.valorCorrente(),
-            data.jurosAoMes()
+            data.jurosAoMes(),
+            usuarioAutenticado
         );
         return new InvestimentoResDTO(repository.save(novoObj));
     }

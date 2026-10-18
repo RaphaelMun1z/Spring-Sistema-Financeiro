@@ -5,6 +5,6 @@ public enum MetodoPagamentoEnum {
     PIX,
     CARTAO_CREDITO,
     CARTAO_DEBITO,
-    VOUNCHER,
+    VOUCHER,
     OUTRO
 }

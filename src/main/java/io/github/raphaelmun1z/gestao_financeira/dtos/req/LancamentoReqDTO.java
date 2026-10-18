@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public record LancamentoReqDTO(
     @NotNull BigDecimal valor,
     @NotNull LocalDate dataLancamento,
-    String registroDeMovimentacaoId,
+    @NotNull String registroDeMovimentacaoId,
     String faturaId
 ) {
 }

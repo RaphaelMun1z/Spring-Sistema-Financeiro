@@ -14,7 +14,7 @@ public record RegistroMovimentacaoReqDTO(
     LocalDate dataLancamento,
     String descricao,
     Boolean ehRecorrente,
-    int quantidadeParcelas,
+    Integer quantidadeParcelas,
     String cartaoId
 ) {
 }

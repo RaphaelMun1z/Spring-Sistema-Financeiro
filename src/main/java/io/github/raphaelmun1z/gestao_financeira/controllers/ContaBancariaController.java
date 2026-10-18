@@ -54,7 +54,7 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
     @GetMapping("/{contaBancariaId}/registros-de-movimentacao")
     public ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorPeriodo(
         @PathVariable String contaBancariaId,
-        @RequestBody @Valid ConsultaPorPeriodoReqDTO data
+        @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
     ) {
         return ResponseEntity.ok(registroDeMovimentacaoService.consultarPorPeriodo(contaBancariaId, data));
     }
@@ -62,7 +62,7 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
     @GetMapping("/{contaBancariaId}/lancamentos")
     public ResponseEntity<List<LancamentoResDTO>> consultarLancamentosPorPeriodo(
         @PathVariable String contaBancariaId,
-        @RequestBody @Valid ConsultaPorPeriodoReqDTO data
+        @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
     ) {
         return ResponseEntity.ok(lancamentoService.consultarPorPeriodo(contaBancariaId, data));
     }

@@ -43,7 +43,6 @@ public class RegistroDeMovimentacao {
         orphanRemoval = true
     )
     private final Set<Lancamento> lancamentos = new HashSet<>();
-    ;
 
     public RegistroDeMovimentacao() {
     }
@@ -68,6 +67,24 @@ public class RegistroDeMovimentacao {
         this.categoria = categoria;
         this.contaBancaria = contaBancaria;
         this.cartao = cartao;
+    }
+
+    public RegistroDeMovimentacao(
+        BigDecimal valorTotal,
+        LocalDate dataLancamento,
+        String descricao,
+        MetodoPagamentoEnum metodoPagamento,
+        Boolean ehRecorrente,
+        CategoriaDeMovimentacao categoria,
+        ContaBancaria contaBancaria
+    ) {
+        this.valorTotal = valorTotal;
+        this.dataLancamento = dataLancamento;
+        this.descricao = descricao;
+        this.metodoPagamento = metodoPagamento;
+        this.ehRecorrente = ehRecorrente;
+        this.categoria = categoria;
+        this.contaBancaria = contaBancaria;
     }
 
     public String getId() {

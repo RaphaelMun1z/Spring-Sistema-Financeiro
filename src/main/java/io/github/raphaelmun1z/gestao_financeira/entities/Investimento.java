@@ -32,12 +32,20 @@ public class Investimento {
     public Investimento() {
     }
 
-    public Investimento(String categoria, LocalDate dataInicio, BigDecimal valorInicial, BigDecimal valorCorrente, Float jurosAoMes) {
+    public Investimento(
+        String categoria,
+        LocalDate dataInicio,
+        BigDecimal valorInicial,
+        BigDecimal valorCorrente,
+        Float jurosAoMes,
+        Usuario investidor
+    ) {
         this.categoria = categoria;
         this.dataInicio = dataInicio;
         this.valorInicial = valorInicial;
         this.valorCorrente = valorCorrente;
         this.jurosAoMes = jurosAoMes;
+        this.investidor = investidor;
     }
 
     public String getId() {
@@ -74,5 +82,9 @@ public class Investimento {
 
     public void setJurosAoMes(Float jurosAoMes) {
         this.jurosAoMes = jurosAoMes;
+    }
+
+    public Usuario getInvestidor() {
+        return investidor;
     }
 }

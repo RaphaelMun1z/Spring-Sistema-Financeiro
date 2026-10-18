@@ -38,6 +38,16 @@ public class Lancamento {
         this.fatura = fatura;
     }
 
+    public Lancamento(
+        BigDecimal valor,
+        LocalDate dataLancamento,
+        RegistroDeMovimentacao registroDeMovimentacao
+    ) {
+        this.valor = valor;
+        this.dataLancamento = dataLancamento;
+        this.registroDeMovimentacao = registroDeMovimentacao;
+    }
+
     public String getId() {
         return id;
     }
