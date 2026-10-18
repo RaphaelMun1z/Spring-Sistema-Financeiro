@@ -3,8 +3,11 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ContaBancariaReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.ContaBancariaResDTO;
 import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
+import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.ContaBancariaRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +23,15 @@ public class ContaBancariaService {
 
     @Transactional
     public ContaBancariaResDTO cadastrar(ContaBancariaReqDTO data){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
+
         ContaBancaria novoObj = new ContaBancaria(
             data.nomeDoBanco(),
             data.saldoCorrente(),
             data.creditoTotal(),
-            data.creditoRestante()
+            data.creditoRestante(),
+            usuarioAutenticado
         );
         return new ContaBancariaResDTO(repository.save(novoObj));
     }
@@ -35,6 +42,9 @@ public class ContaBancariaService {
     }
 
     public List<ContaBancariaResDTO> consultarTodos() {
-        return repository.findAll().stream().map(ContaBancariaResDTO::new).toList();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Usuario usuarioAutenticado = (Usuario) authentication.getPrincipal();
+
+        return repository.findByTitularId(usuarioAutenticado.getId()).stream().map(ContaBancariaResDTO::new).toList();
     }
 }

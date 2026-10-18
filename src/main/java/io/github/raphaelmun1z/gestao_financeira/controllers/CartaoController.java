@@ -29,15 +29,20 @@ public class CartaoController implements CartaoControllerContract {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
-    @GetMapping
-    public ResponseEntity<List<CartaoResDTO>> consultarTodos() {
-        return ResponseEntity.ok(service.consultarTodos());
+    @GetMapping("/{contaBancariaId}")
+    public ResponseEntity<List<CartaoResDTO>> consultarPorContaBancaria(@PathVariable String contaBancariaId) {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return ResponseEntity.ok(service.consultarPorContaBancaria(contaBancariaId));
     }
 
     @GetMapping("/{cartaoId}/faturas")
     public ResponseEntity<List<FaturaResDTO>> consultarFaturasPorPeriodo(
         @PathVariable String cartaoId,
-        @RequestBody @Valid ConsultaPorPeriodoReqDTO data
+        @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
     ) {
         return ResponseEntity.ok(faturaService.consultarPorPeriodo(cartaoId, data));
     }

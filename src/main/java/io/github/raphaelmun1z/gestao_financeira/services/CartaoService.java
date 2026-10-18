@@ -105,8 +105,8 @@ public class CartaoService {
             .orElseThrow(() -> new NotFoundException("Cartão não encontrado!"));
     }
 
-    public List<CartaoResDTO> consultarTodos() {
-        return repository.findAll().stream()
+    public List<CartaoResDTO> consultarPorContaBancaria(String contaBancariaId) {
+        return repository.findByContaBancaria_Id(contaBancariaId).stream()
             .<CartaoResDTO>map(cartao -> switch (cartao) {
                 case CartaoCredito cc -> new CartaoCreditoResDTO(cc);
                 case CartaoDebito cd -> new CartaoDebitoResDTO(cd);

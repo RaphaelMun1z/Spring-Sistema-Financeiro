@@ -41,12 +41,14 @@ public class ContaBancaria {
         String nomeDoBanco,
         BigDecimal saldoCorrente,
         BigDecimal creditoTotal,
-        BigDecimal creditoRestante
+        BigDecimal creditoRestante,
+        Usuario titular
     ) {
         this.nomeDoBanco = nomeDoBanco;
         this.saldoCorrente = saldoCorrente;
         this.creditoTotal = creditoTotal;
         this.creditoRestante = creditoRestante;
+        this.titular = titular;
     }
 
     public String getId() {

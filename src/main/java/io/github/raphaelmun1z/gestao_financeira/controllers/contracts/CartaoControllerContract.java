@@ -40,14 +40,17 @@ public interface CartaoControllerContract {
     );
 
     @Operation(
-        summary = "Listar cartões",
-        description = "Retorna os cartões cadastrados do usuário autenticado."
+        summary = "Listar cartões por conta bancária",
+        description = "Retorna os cartões cadastrados em uma conta bancária."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Cartões consultados com sucesso."),
         @ApiResponse(responseCode = "401", description = "Usuário não autenticado.")
     })
-    ResponseEntity<List<CartaoResDTO>> consultarTodos();
+    ResponseEntity<List<CartaoResDTO>> consultarPorContaBancaria(
+        @Parameter(description = "Identificador da conta bancária.", required = true)
+        @PathVariable String contaBancariaId
+    );
 
     @Operation(
         summary = "Consultar faturas por período",
