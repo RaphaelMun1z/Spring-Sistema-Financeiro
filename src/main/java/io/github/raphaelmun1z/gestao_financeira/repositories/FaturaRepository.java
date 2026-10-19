@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FaturaRepository extends JpaRepository<Fatura, String> {
-    List<Fatura> findByDataReferenciaBetween(YearMonth dataInicial, YearMonth dataFinal);
+    List<Fatura> findByCartaoDeCredito_IdAndDataReferenciaBetween(String cartaoID, YearMonth dataInicial, YearMonth dataFinal);
 
     Optional<Fatura> findByCartaoDeCredito_IdAndDataReferencia(
         String cartaoId,

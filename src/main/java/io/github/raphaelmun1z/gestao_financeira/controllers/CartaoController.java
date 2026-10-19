@@ -25,11 +25,13 @@ public class CartaoController implements CartaoControllerContract {
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<CartaoResDTO> cadastrar(@RequestBody @Valid CartaoReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
     @GetMapping("/{contaBancariaId}")
+    @Override
     public ResponseEntity<List<CartaoResDTO>> consultarPorContaBancaria(@PathVariable String contaBancariaId) {
         try {
             Thread.sleep(2000);
@@ -40,10 +42,16 @@ public class CartaoController implements CartaoControllerContract {
     }
 
     @GetMapping("/{cartaoId}/faturas")
-    public ResponseEntity<List<FaturaResDTO>> consultarFaturasPorPeriodo(
+    @Override
+    public ResponseEntity<List<FaturaResDTO>> consultarFaturasPorCartaoEPeriodo(
         @PathVariable String cartaoId,
         @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
     ) {
-        return ResponseEntity.ok(faturaService.consultarPorPeriodo(cartaoId, data));
+        return ResponseEntity.ok(faturaService.consultarPorCartaoEPeriodo(cartaoId, data));
+    }
+
+    @GetMapping("/faturas/{faturaId}")
+    public ResponseEntity<FaturaResDTO> consultarFaturaPorId(@PathVariable String faturaId) {
+        return ResponseEntity.ok(faturaService.consultarPorId(faturaId));
     }
 }

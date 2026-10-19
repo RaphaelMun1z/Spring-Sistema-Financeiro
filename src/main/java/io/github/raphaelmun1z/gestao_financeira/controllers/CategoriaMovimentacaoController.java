@@ -28,21 +28,25 @@ public class CategoriaMovimentacaoController implements CategoriaMovimentacaoCon
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<CategoriaMovimentacaoResDTO> cadastrar(@RequestBody @Valid CategoriaDeMovimentacaoReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
     @GetMapping("/{categoriaId}")
+    @Override
     public ResponseEntity<CategoriaMovimentacaoResDTO> consultarPorId(@PathVariable String categoriaId) {
         return ResponseEntity.ok(service.consultarPorId(categoriaId));
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<CategoriaMovimentacaoResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }
 
     @PostMapping("/{categoriaId}/orcamentos")
+    @Override
     public ResponseEntity<OrcamentoResDTO> cadastrarOrcamento(
         @PathVariable String categoriaId,
         @RequestBody @Valid OrcamentoReqDTO data
@@ -51,6 +55,7 @@ public class CategoriaMovimentacaoController implements CategoriaMovimentacaoCon
     }
 
     @GetMapping("/{categoriaId}/orcamentos")
+    @Override
     public ResponseEntity<List<OrcamentoResDTO>> consultarOrcamentos(@PathVariable String categoriaId) {
         return ResponseEntity.ok(orcamentoService.consultarPorCategoria(categoriaId));
     }

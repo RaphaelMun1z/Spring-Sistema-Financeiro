@@ -20,11 +20,13 @@ public class InvestimentoController implements InvestimentoControllerContract {
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<InvestimentoResDTO> cadastrar(@RequestBody @Valid InvestimentoReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<InvestimentoResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }

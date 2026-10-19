@@ -20,11 +20,13 @@ public class MetaFinanceiraController implements MetaFinanceiraControllerContrac
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<MetaFinanceiraResDTO> cadastrar(@RequestBody @Valid MetaFinanceiraReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<MetaFinanceiraResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }

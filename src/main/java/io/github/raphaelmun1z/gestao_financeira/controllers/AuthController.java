@@ -22,11 +22,13 @@ public class AuthController implements AuthControllerContract {
     }
 
     @PostMapping("/acessar")
+    @Override
     public ResponseEntity<LoginResDTO> acessar(@RequestBody @Valid LoginReqDTO data) {
         return ResponseEntity.ok(service.login(data));
     }
 
     @GetMapping("/me")
+    @Override
     public ResponseEntity<UserDetailsResDTO> me() {
         return ResponseEntity.ok(UsuarioService.obterResumoUsuarioAutenticado());
     }

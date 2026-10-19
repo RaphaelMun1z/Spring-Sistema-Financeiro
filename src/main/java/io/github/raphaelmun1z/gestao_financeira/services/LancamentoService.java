@@ -2,7 +2,6 @@ package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.LancamentoReqDTO;
-import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.FaturaResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.LancamentoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Fatura;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Lancamento;
@@ -11,10 +10,9 @@ import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundExcept
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.RegistroDeMovimentacaoRepository;
 import org.jspecify.annotations.NonNull;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
@@ -41,7 +39,8 @@ public class LancamentoService {
         if (data.faturaId() != null) {
             // Consulta fatura do próximo mês
             String cartaoId = registroDeMovimentacao.getCartao().getId();
-            Fatura faturaCartao = faturaService.obterProximaFaturaDoCartao(cartaoId);
+            YearMonth proximoMes = YearMonth.now().plusMonths(1);
+            Fatura faturaCartao = faturaService.consultarEntidadePorCartaoEDataReferencia(cartaoId, proximoMes);
 
             lancamentoObj = new Lancamento(
                 data.valor(),

@@ -23,7 +23,7 @@ public class Fatura {
 
     private BigDecimal valorTotal;
 
-    @Column(name = "data_referencia", nullable = false)
+    @Column(name = "data_referencia", nullable = false, length = 7)
     private YearMonth dataReferencia;
 
     @Enumerated(EnumType.STRING)
@@ -40,14 +40,12 @@ public class Fatura {
     }
 
     public Fatura(
-        BigDecimal valorTotal,
         YearMonth dataReferencia,
-        StatusFaturaEnum status,
         CartaoCredito cartaoDeCredito
     ) {
-        this.valorTotal = valorTotal;
+        this.valorTotal = BigDecimal.valueOf(0);
         this.dataReferencia = dataReferencia;
-        this.status = status;
+        this.status = StatusFaturaEnum.ABERTA;
         this.cartaoDeCredito = cartaoDeCredito;
     }
 

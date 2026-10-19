@@ -63,7 +63,7 @@ public interface CartaoControllerContract {
         @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
         @ApiResponse(responseCode = "404", description = "Cartão não encontrado.")
     })
-    ResponseEntity<List<FaturaResDTO>> consultarFaturasPorPeriodo(
+    ResponseEntity<List<FaturaResDTO>> consultarFaturasPorCartaoEPeriodo(
         @Parameter(description = "Identificador do cartão.", required = true)
         @PathVariable String cartaoId,
 

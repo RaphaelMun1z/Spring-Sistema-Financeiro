@@ -34,16 +34,19 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<ContaBancariaResDTO> cadastrar(@RequestBody @Valid ContaBancariaReqDTO data) {
         return ResponseEntity.ok(service.cadastrar(data));
     }
 
     @GetMapping
+    @Override
     public ResponseEntity<List<ContaBancariaResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }
 
     @PostMapping("/{contaBancariaId}/registros-de-movimentacao")
+    @Override
     public ResponseEntity<RegistroMovimentacaoResDTO> cadastrarMovimentacao(
         @PathVariable String contaBancariaId,
         @RequestBody @Valid RegistroMovimentacaoReqDTO data
@@ -52,6 +55,7 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
     }
 
     @GetMapping("/{contaBancariaId}/registros-de-movimentacao")
+    @Override
     public ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorPeriodo(
         @PathVariable String contaBancariaId,
         @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
@@ -60,6 +64,7 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
     }
 
     @GetMapping("/{contaBancariaId}/lancamentos")
+    @Override
     public ResponseEntity<List<LancamentoResDTO>> consultarLancamentosPorPeriodo(
         @PathVariable String contaBancariaId,
         @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
