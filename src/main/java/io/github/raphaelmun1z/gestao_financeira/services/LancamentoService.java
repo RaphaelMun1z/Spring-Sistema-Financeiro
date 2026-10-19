@@ -9,7 +9,6 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.RegistroDe
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.LancamentoRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.RegistroDeMovimentacaoRepository;
-import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.YearMonth;
@@ -57,20 +56,6 @@ public class LancamentoService {
         }
 
         Lancamento lancamentoSalvo = repository.save(lancamentoObj);
-        return new LancamentoResDTO(lancamentoSalvo);
-    }
-
-    private @NonNull LancamentoResDTO geraLancamentoFatura(LancamentoReqDTO data) {
-        Fatura fatura = faturaService.consultarEntidadePorId(data.faturaId());
-
-        Lancamento lancamento = new Lancamento(
-            data.valor(),
-            data.dataLancamento(),
-            null,
-            fatura
-        );
-
-        Lancamento lancamentoSalvo = repository.save(lancamento);
         return new LancamentoResDTO(lancamentoSalvo);
     }
 

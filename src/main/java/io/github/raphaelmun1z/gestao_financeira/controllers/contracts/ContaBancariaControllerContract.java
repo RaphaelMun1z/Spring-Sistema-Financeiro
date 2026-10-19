@@ -80,7 +80,7 @@ public interface ContaBancariaControllerContract {
         @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
         @ApiResponse(responseCode = "404", description = "Conta bancária não encontrada.")
     })
-    ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorPeriodo(
+    ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorContaBancariaEPeriodo(
         @Parameter(description = "Identificador da conta bancária.", required = true)
         @PathVariable String contaBancariaId,
 

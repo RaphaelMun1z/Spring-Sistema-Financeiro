@@ -7,5 +7,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RegistroDeMovimentacaoRepository extends JpaRepository<RegistroDeMovimentacao, String> {
-    List<RegistroDeMovimentacao> findByDataLancamentoBetween(LocalDate dataInicial, LocalDate dataFinal);
+    List<RegistroDeMovimentacao> findByContaBancaria_IdAndDataLancamentoBetween(String contaBancariaId, LocalDate dataInicial, LocalDate dataFinal);
 }

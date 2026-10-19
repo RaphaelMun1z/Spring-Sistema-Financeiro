@@ -56,11 +56,16 @@ public class ContaBancariaController implements ContaBancariaControllerContract 
 
     @GetMapping("/{contaBancariaId}/registros-de-movimentacao")
     @Override
-    public ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorPeriodo(
+    public ResponseEntity<List<RegistroMovimentacaoResDTO>> consultarMovimentacoesPorContaBancariaEPeriodo(
         @PathVariable String contaBancariaId,
         @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
     ) {
-        return ResponseEntity.ok(registroDeMovimentacaoService.consultarPorPeriodo(contaBancariaId, data));
+        return ResponseEntity.ok(registroDeMovimentacaoService.consultarPorContaBancariaEPeriodo(contaBancariaId, data));
+    }
+
+    @GetMapping("/registros-de-movimentacao/{registroId}")
+    public ResponseEntity<RegistroMovimentacaoResDTO> consultarMovimentacaoPorId(@PathVariable String registroId) {
+        return ResponseEntity.ok(registroDeMovimentacaoService.consultarPorId(registroId));
     }
 
     @GetMapping("/{contaBancariaId}/lancamentos")

@@ -203,8 +203,12 @@ public class RegistroDeMovimentacaoService {
             .orElseThrow(() -> new NotFoundException("Registro de movimentação não encontrado!"));
     }
 
-    public List<RegistroMovimentacaoResDTO> consultarPorPeriodo(String contaBancariaId, ConsultaPorPeriodoReqDTO data) {
-        List<RegistroDeMovimentacao> registros = repository.findByDataLancamentoBetween(data.dataInicial(), data.dataFinal());
+    public RegistroMovimentacaoResDTO consultarPorId(String id) {
+        return new RegistroMovimentacaoResDTO(consultarEntidadePorId(id));
+    }
+
+    public List<RegistroMovimentacaoResDTO> consultarPorContaBancariaEPeriodo(String contaBancariaId, ConsultaPorPeriodoReqDTO data) {
+        List<RegistroDeMovimentacao> registros = repository.findByContaBancaria_IdAndDataLancamentoBetween(contaBancariaId, data.dataInicial(), data.dataFinal());
         return registros.stream().map(RegistroMovimentacaoResDTO::new).toList();
     }
 }
