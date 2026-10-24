@@ -4,6 +4,7 @@ import io.github.raphaelmun1z.gestao_financeira.entities.cartao.Cartao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +25,8 @@ public class ContaBancaria {
     private String nomeDoBanco;
 
     private BigDecimal saldoCorrente;
+    private BigDecimal saldoInicial;
+    private LocalDate dataAbertura;
     private BigDecimal creditoTotal;
     private BigDecimal creditoRestante;
 
@@ -46,6 +49,8 @@ public class ContaBancaria {
     ) {
         this.nomeDoBanco = nomeDoBanco;
         this.saldoCorrente = saldoCorrente;
+        this.saldoInicial = saldoCorrente;
+        this.dataAbertura = LocalDate.now();
         this.creditoTotal = creditoTotal;
         this.creditoRestante = creditoRestante;
         this.titular = titular;
@@ -63,8 +68,28 @@ public class ContaBancaria {
         this.nomeDoBanco = nomeDoBanco;
     }
 
+    public void setDataAbertura(LocalDate dataAbertura) {
+        this.dataAbertura = dataAbertura;
+    }
+
     public BigDecimal getSaldoCorrente() {
         return saldoCorrente;
+    }
+
+    public void setSaldoCorrente(BigDecimal saldoCorrente) {
+        this.saldoCorrente = saldoCorrente;
+    }
+
+    public BigDecimal getSaldoInicial() {
+        return saldoInicial;
+    }
+
+    public LocalDate getDataAbertura() {
+        return dataAbertura;
+    }
+
+    public void setCreditoRestante(BigDecimal creditoRestante) {
+        this.creditoRestante = creditoRestante;
     }
 
     public BigDecimal getCreditoTotal() {

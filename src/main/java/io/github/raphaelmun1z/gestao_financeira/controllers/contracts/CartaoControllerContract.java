@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.core.annotations.ParameterObject;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,6 +25,25 @@ import java.util.List;
 )
 @SecurityRequirement(name = "bearerAuth")
 public interface CartaoControllerContract {
+
+    @Operation(summary = "Editar cartão", description = "Edita o apelido e as configurações do cartão; calendários com faturas não podem ser alterados.")
+    ResponseEntity<CartaoResDTO> atualizar(@PathVariable String cartaoId, @RequestBody @Valid CartaoReqDTO data);
+
+    @Operation(summary = "Excluir cartão", description = "Exclui somente cartões sem faturas ou movimentações vinculadas.")
+    ResponseEntity<Void> excluir(@PathVariable String cartaoId);
+
+    @Operation(summary = "Pagar fatura",
+        description = "Debita integralmente o saldo da conta do cartão e libera o limite. Repetir o pagamento de uma fatura paga não altera os saldos.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Fatura paga."),
+        @ApiResponse(responseCode = "400", description = "Saldo insuficiente ou fatura sem valor."),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
+        @ApiResponse(responseCode = "404", description = "Fatura não encontrada.")
+    })
+    ResponseEntity<FaturaResDTO> pagarFatura(
+        @Parameter(description = "Identificador da fatura.", required = true)
+        @PathVariable String faturaId
+    );
 
     @Operation(
         summary = "Cadastrar cartão",
@@ -53,20 +73,4 @@ public interface CartaoControllerContract {
         @PathVariable String contaBancariaId
     );
 
-    @Operation(
-        summary = "Consultar faturas por período",
-        description = "Retorna as faturas de um cartão de crédito dentro do período informado."
-    )
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = "Faturas consultadas com sucesso."),
-        @ApiResponse(responseCode = "400", description = "Período informado inválido."),
-        @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
-        @ApiResponse(responseCode = "404", description = "Cartão não encontrado.")
-    })
-    ResponseEntity<List<FaturaResDTO>> consultarFaturasPorCartaoEPeriodo(
-        @Parameter(description = "Identificador do cartão.", required = true)
-        @PathVariable String cartaoId,
-
-        @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
-    );
 }

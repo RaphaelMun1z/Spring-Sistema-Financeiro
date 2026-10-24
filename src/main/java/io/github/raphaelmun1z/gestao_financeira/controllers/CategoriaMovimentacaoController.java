@@ -39,6 +39,17 @@ public class CategoriaMovimentacaoController implements CategoriaMovimentacaoCon
         return ResponseEntity.ok(service.consultarPorId(categoriaId));
     }
 
+    @PutMapping("/{categoriaId}")
+    public ResponseEntity<CategoriaMovimentacaoResDTO> atualizar(@PathVariable String categoriaId, @RequestBody @Valid CategoriaDeMovimentacaoReqDTO data) {
+        return ResponseEntity.ok(service.atualizar(categoriaId, data));
+    }
+
+    @DeleteMapping("/{categoriaId}")
+    public ResponseEntity<Void> excluir(@PathVariable String categoriaId) {
+        service.excluir(categoriaId);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     @Override
     public ResponseEntity<List<CategoriaMovimentacaoResDTO>> consultarTodos() {
@@ -58,5 +69,21 @@ public class CategoriaMovimentacaoController implements CategoriaMovimentacaoCon
     @Override
     public ResponseEntity<List<OrcamentoResDTO>> consultarOrcamentos(@PathVariable String categoriaId) {
         return ResponseEntity.ok(orcamentoService.consultarPorCategoria(categoriaId));
+    }
+
+    @GetMapping("/{categoriaId}/orcamentos/{orcamentoId}")
+    public ResponseEntity<OrcamentoResDTO> consultarOrcamentoPorId(@PathVariable String categoriaId, @PathVariable String orcamentoId) {
+        return ResponseEntity.ok(orcamentoService.consultarPorId(categoriaId, orcamentoId));
+    }
+
+    @PutMapping("/{categoriaId}/orcamentos/{orcamentoId}")
+    public ResponseEntity<OrcamentoResDTO> atualizarOrcamento(@PathVariable String categoriaId, @PathVariable String orcamentoId, @RequestBody @Valid OrcamentoReqDTO data) {
+        return ResponseEntity.ok(orcamentoService.atualizar(categoriaId, orcamentoId, data));
+    }
+
+    @DeleteMapping("/{categoriaId}/orcamentos/{orcamentoId}")
+    public ResponseEntity<Void> excluirOrcamento(@PathVariable String categoriaId, @PathVariable String orcamentoId) {
+        orcamentoService.excluir(categoriaId, orcamentoId);
+        return ResponseEntity.noContent().build();
     }
 }

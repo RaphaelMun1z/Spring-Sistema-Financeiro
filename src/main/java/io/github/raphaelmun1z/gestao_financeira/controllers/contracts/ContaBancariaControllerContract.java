@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,51 @@ import java.util.List;
 )
 @SecurityRequirement(name = "bearerAuth")
 public interface ContaBancariaControllerContract {
+
+    @Operation(summary = "Consultar conta bancária por ID")
+    ResponseEntity<ContaBancariaResDTO> consultarPorId(@PathVariable String contaBancariaId);
+
+    @Operation(summary = "Consultar cartão por ID dentro da conta")
+    ResponseEntity<io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO> consultarCartaoPorId(@PathVariable String contaBancariaId, @PathVariable String cartaoId);
+
+    @Operation(summary = "Consultar fatura por ID dentro da conta e cartão")
+    ResponseEntity<io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.FaturaResDTO> consultarFaturaPorIdNoCaminho(@PathVariable String contaBancariaId, @PathVariable String cartaoId, @PathVariable String faturaId);
+
+    @Operation(summary = "Editar conta bancária", description = "Altera apenas o nome da conta; saldo e limite não são editados diretamente.")
+    ResponseEntity<ContaBancariaResDTO> atualizar(@PathVariable String contaBancariaId, @RequestBody @Valid io.github.raphaelmun1z.gestao_financeira.dtos.req.ContaBancariaAtualizacaoReqDTO data);
+
+    @Operation(summary = "Excluir conta bancária", description = "Exclui a conta somente quando ela não possui cartões nem movimentações.")
+    ResponseEntity<Void> excluir(@PathVariable String contaBancariaId);
+
+    @Operation(summary = "Editar descrição da movimentação", description = "Altera apenas a descrição, preservando o histórico financeiro.")
+    ResponseEntity<RegistroMovimentacaoResDTO> atualizarMovimentacao(@PathVariable String registroId, @RequestBody @Valid io.github.raphaelmun1z.gestao_financeira.dtos.req.MovimentacaoAtualizacaoReqDTO data);
+
+    @Operation(summary = "Ativar ou cancelar recorrência", description = "Afeta somente futuras gerações; movimentações já geradas permanecem intactas.")
+    ResponseEntity<RegistroMovimentacaoResDTO> atualizarRecorrencia(@PathVariable String registroId, @RequestBody @Valid io.github.raphaelmun1z.gestao_financeira.dtos.req.RecorrenciaReqDTO data);
+
+    @Operation(summary = "Consultar movimentação", description = "Retorna uma movimentação pertencente ao usuário autenticado.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Movimentação consultada com sucesso."),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
+        @ApiResponse(responseCode = "404", description = "Movimentação não encontrada.")
+    })
+    ResponseEntity<RegistroMovimentacaoResDTO> consultarMovimentacaoPorId(
+        @Parameter(description = "Identificador da movimentação.", required = true)
+        @PathVariable String registroId
+    );
+
+    @Operation(summary = "Cancelar movimentação",
+        description = "Exclui a movimentação e suas parcelas, recalcula faturas e estorna saldo ou limite. Movimentações com fatura paga não podem ser excluídas.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "204", description = "Movimentação cancelada."),
+        @ApiResponse(responseCode = "400", description = "Fatura paga ou saldo insuficiente para estornar uma entrada."),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
+        @ApiResponse(responseCode = "404", description = "Movimentação não encontrada.")
+    })
+    ResponseEntity<Void> excluirMovimentacao(
+        @Parameter(description = "Identificador da movimentação.", required = true)
+        @PathVariable String registroId
+    );
 
     @Operation(
         summary = "Cadastrar conta bancária",
@@ -54,7 +100,7 @@ public interface ContaBancariaControllerContract {
 
     @Operation(
         summary = "Cadastrar registro de movimentação",
-        description = "Cadastra um registro de movimentação financeira vinculado à conta bancária informada."
+        description = "Atualiza saldo ou limite e gera lançamentos atomicamente. Crédito exige 1 a 120 parcelas; compra no dia do fechamento entra no próximo ciclo. Voucher utiliza saldo próprio. Quando ehRecorrente=true, uma nova movimentação igual é gerada mensalmente sem data final."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Registro cadastrado com sucesso."),
@@ -84,7 +130,7 @@ public interface ContaBancariaControllerContract {
         @Parameter(description = "Identificador da conta bancária.", required = true)
         @PathVariable String contaBancariaId,
 
-        @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
+        @ParameterObject @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
     );
 
     @Operation(
@@ -101,6 +147,6 @@ public interface ContaBancariaControllerContract {
         @Parameter(description = "Identificador da conta bancária.", required = true)
         @PathVariable String contaBancariaId,
 
-        @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
+        @ParameterObject @ModelAttribute @Valid ConsultaPorPeriodoReqDTO data
     );
 }

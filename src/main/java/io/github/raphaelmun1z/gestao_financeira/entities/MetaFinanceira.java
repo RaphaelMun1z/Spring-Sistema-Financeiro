@@ -31,11 +31,18 @@ public class MetaFinanceira {
     public MetaFinanceira() {
     }
 
-    public MetaFinanceira(String objetivo, BigDecimal valorAlvo, BigDecimal valorAcumulado, YearMonth dataConclusaoPrevista) {
+    public MetaFinanceira(
+        String objetivo,
+        BigDecimal valorAlvo,
+        BigDecimal valorAcumulado,
+        YearMonth dataConclusaoPrevista,
+        Usuario criador
+    ) {
         this.objetivo = objetivo;
         this.valorAlvo = valorAlvo;
         this.valorAcumulado = valorAcumulado;
         this.dataConclusaoPrevista = dataConclusaoPrevista;
+        this.criador = criador;
     }
 
     public String getId() {
@@ -60,6 +67,10 @@ public class MetaFinanceira {
 
     public BigDecimal getValorAcumulado() {
         return valorAcumulado;
+    }
+
+    public void setValorAcumulado(BigDecimal valorAcumulado) {
+        this.valorAcumulado = valorAcumulado;
     }
 
     public YearMonth getDataConclusaoPrevista() {

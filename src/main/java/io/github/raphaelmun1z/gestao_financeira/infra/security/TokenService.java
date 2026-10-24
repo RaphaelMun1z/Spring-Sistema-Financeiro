@@ -15,10 +15,11 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class TokenService {
-    @Value("${api.security.token.secret:secret}")
+    @Value("${api.security.token.secret}")
     private String secret;
 
     private final int HOURS_TOKEN_EXPIRE = 12;
@@ -27,8 +28,11 @@ public class TokenService {
 
     @PostConstruct
     protected void init() {
-        secret = Base64.getEncoder().encodeToString(secret.getBytes());
-        algorithm = Algorithm.HMAC256(secret.getBytes());
+        if (secret == null || secret.isBlank() || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalStateException("JWT_SECRET deve possuir pelo menos 32 bytes.");
+        }
+        secret = Base64.getEncoder().encodeToString(secret.getBytes(StandardCharsets.UTF_8));
+        algorithm = Algorithm.HMAC256(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public TokenDTO generateToken(Usuario user) {

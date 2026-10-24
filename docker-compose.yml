@@ -2,29 +2,49 @@ name: projeto-sistema-financeiro
 
 services:
   bancoDeDados:
-    container_name: bd_postgres
     image: postgres:16.3
-
     environment:
       TZ: America/Sao_Paulo
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-db_sistema_financeiro}
-
+      POSTGRES_USER: ${POSTGRES_USER:?Defina POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?Defina POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}" ]
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
       interval: 5s
       timeout: 5s
-      retries: 5
-
+      retries: 10
     ports:
-      - "5432:5432"
-
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - postgres-compose-network
 
-    restart: "no"
-
+  aplicacao:
+    build: .
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      DATA_MOCK_ENABLED: ${DATA_MOCK_ENABLED:-false}
+      SERVER_PORT: 8080
+      POSTGRES_HOST: bancoDeDados
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:?Defina POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:?Defina POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Defina POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Defina JWT_SECRET}
+      CORS_ALLOWED_ORIGIN: ${CORS_ALLOWED_ORIGIN:-}
+      INITIAL_USER_ENABLED: ${INITIAL_USER_ENABLED:-false}
+      INITIAL_USER_NAME: ${INITIAL_USER_NAME:-}
+      INITIAL_USER_EMAIL: ${INITIAL_USER_EMAIL:-}
+      INITIAL_USER_PASSWORD: ${INITIAL_USER_PASSWORD:-}
+    depends_on:
+      bancoDeDados:
+        condition: service_healthy
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+    restart: unless-stopped
     networks:
       - postgres-compose-network
 

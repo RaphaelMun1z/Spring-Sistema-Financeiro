@@ -37,7 +37,15 @@ public abstract class Cartao {
         return apelido;
     }
 
+    public void setApelido(String apelido) {
+        this.apelido = apelido;
+    }
+
     public String getContaBancariaId() {
         return contaBancaria.getId();
+    }
+
+    public String getNomeBanco() {
+        return contaBancaria.getNomeDoBanco();
     }
 }

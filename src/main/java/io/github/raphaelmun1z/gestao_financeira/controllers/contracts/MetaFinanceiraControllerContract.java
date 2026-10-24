@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -20,6 +21,15 @@ import java.util.List;
 )
 @SecurityRequirement(name = "bearerAuth")
 public interface MetaFinanceiraControllerContract {
+
+    @Operation(summary = "Consultar meta financeira por ID")
+    ResponseEntity<MetaFinanceiraResDTO> consultarPorId(@PathVariable String metaId);
+
+    @Operation(summary = "Editar meta financeira")
+    ResponseEntity<MetaFinanceiraResDTO> atualizar(@PathVariable String metaId, @RequestBody @Valid MetaFinanceiraReqDTO data);
+
+    @Operation(summary = "Excluir meta financeira")
+    ResponseEntity<Void> excluir(@PathVariable String metaId);
 
     @Operation(
         summary = "Cadastrar meta financeira",

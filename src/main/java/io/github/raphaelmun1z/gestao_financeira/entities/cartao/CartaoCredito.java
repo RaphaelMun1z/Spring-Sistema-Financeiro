@@ -7,6 +7,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Set;
 
 @Entity
@@ -61,5 +63,14 @@ public class CartaoCredito extends Cartao {
 
     public Set<Fatura> getFaturas() {
         return faturas;
+    }
+
+    public YearMonth calcularReferencia(LocalDate dataCompra) {
+        YearMonth mesFechamento = YearMonth.from(dataCompra);
+        LocalDate fechamento = mesFechamento.atDay(Math.min(diaFechamento, mesFechamento.lengthOfMonth()));
+        if (!dataCompra.isBefore(fechamento)) {
+            mesFechamento = mesFechamento.plusMonths(1);
+        }
+        return diaVencimento <= diaFechamento ? mesFechamento.plusMonths(1) : mesFechamento;
     }
 }

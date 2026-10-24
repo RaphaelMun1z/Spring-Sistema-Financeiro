@@ -58,6 +58,10 @@ public class Orcamento {
         return valorCorrente;
     }
 
+    public void setValorCorrente(BigDecimal valorCorrente) {
+        this.valorCorrente = valorCorrente;
+    }
+
     public CategoriaDeMovimentacao getCategoria() {
         return categoria;
     }

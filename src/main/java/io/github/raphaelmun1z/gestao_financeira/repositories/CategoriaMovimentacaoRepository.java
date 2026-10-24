@@ -13,4 +13,12 @@ public interface CategoriaMovimentacaoRepository extends JpaRepository<Categoria
 
     @EntityGraph(attributePaths = "orcamentos")
     Optional<CategoriaDeMovimentacao> findById(String id);
+
+    @EntityGraph(attributePaths = "orcamentos")
+    List<CategoriaDeMovimentacao> findByAutorId(String autorId);
+
+    @EntityGraph(attributePaths = "orcamentos")
+    Optional<CategoriaDeMovimentacao> findByIdAndAutorId(String id, String autorId);
+
+    boolean existsByNomeAndAutorId(String nome, String autorId);
 }

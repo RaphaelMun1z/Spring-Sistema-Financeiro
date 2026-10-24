@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -21,9 +22,18 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public interface InvestimentoControllerContract {
 
+    @Operation(summary = "Consultar investimento por ID")
+    ResponseEntity<InvestimentoResDTO> consultarPorId(@PathVariable String investimentoId);
+
+    @Operation(summary = "Editar investimento", description = "Atualiza categoria, taxa e valor corrente; a data de início permanece imutável.")
+    ResponseEntity<InvestimentoResDTO> atualizar(@PathVariable String investimentoId, @RequestBody @Valid InvestimentoReqDTO data);
+
+    @Operation(summary = "Excluir investimento")
+    ResponseEntity<Void> excluir(@PathVariable String investimentoId);
+
     @Operation(
         summary = "Cadastrar investimento",
-        description = "Cadastra um novo investimento vinculado ao usuário autenticado."
+        description = "Cadastra um novo investimento vinculado ao usuário autenticado. O rendimento mensal composto começa após o primeiro mês e é aplicado no dia correspondente à data de início."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Investimento cadastrado com sucesso."),

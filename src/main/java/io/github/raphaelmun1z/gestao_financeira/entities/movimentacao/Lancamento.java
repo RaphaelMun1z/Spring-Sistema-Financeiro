@@ -15,6 +15,9 @@ public class Lancamento {
     private BigDecimal valor;
     private LocalDate dataLancamento;
 
+    @Column(name = "numero_parcela", nullable = false)
+    private Integer numeroParcela;
+
     @ManyToOne
     @JoinColumn(name = "registro_de_movimentacao_id")
     private RegistroDeMovimentacao registroDeMovimentacao;
@@ -32,10 +35,21 @@ public class Lancamento {
         RegistroDeMovimentacao registroDeMovimentacao,
         Fatura fatura
     ) {
+        this(valor, dataLancamento, registroDeMovimentacao, fatura, 1);
+    }
+
+    public Lancamento(
+        BigDecimal valor,
+        LocalDate dataLancamento,
+        RegistroDeMovimentacao registroDeMovimentacao,
+        Fatura fatura,
+        Integer numeroParcela
+    ) {
         this.valor = valor;
         this.dataLancamento = dataLancamento;
         this.registroDeMovimentacao = registroDeMovimentacao;
         this.fatura = fatura;
+        this.numeroParcela = numeroParcela;
     }
 
     public Lancamento(
@@ -43,9 +57,16 @@ public class Lancamento {
         LocalDate dataLancamento,
         RegistroDeMovimentacao registroDeMovimentacao
     ) {
-        this.valor = valor;
-        this.dataLancamento = dataLancamento;
-        this.registroDeMovimentacao = registroDeMovimentacao;
+        this(valor, dataLancamento, registroDeMovimentacao, null, 1);
+    }
+
+    public Lancamento(
+        BigDecimal valor,
+        LocalDate dataLancamento,
+        RegistroDeMovimentacao registroDeMovimentacao,
+        Integer numeroParcela
+    ) {
+        this(valor, dataLancamento, registroDeMovimentacao, null, numeroParcela);
     }
 
     public String getId() {
@@ -58,6 +79,10 @@ public class Lancamento {
 
     public LocalDate getDataLancamento() {
         return dataLancamento;
+    }
+
+    public Integer getNumeroParcela() {
+        return numeroParcela;
     }
 
     public RegistroDeMovimentacao getRegistroDeMovimentacao() {

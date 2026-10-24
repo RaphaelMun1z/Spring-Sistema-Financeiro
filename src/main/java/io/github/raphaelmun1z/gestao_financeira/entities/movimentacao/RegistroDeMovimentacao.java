@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,6 +25,7 @@ public class RegistroDeMovimentacao {
     private MetodoPagamentoEnum metodoPagamento;
     private Boolean ehRecorrente;
     private Integer quantidadeParcelas;
+    private LocalDate proximaRecorrencia;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id")
@@ -64,6 +66,7 @@ public class RegistroDeMovimentacao {
         this.metodoPagamento = metodoPagamento;
         this.ehRecorrente = ehRecorrente;
         this.quantidadeParcelas = quantidadeParcelas;
+        this.proximaRecorrencia = Boolean.TRUE.equals(ehRecorrente) ? dataLancamento.plusMonths(1) : null;
         this.categoria = categoria;
         this.contaBancaria = contaBancaria;
         this.cartao = cartao;
@@ -103,6 +106,10 @@ public class RegistroDeMovimentacao {
         return descricao;
     }
 
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     public MetodoPagamentoEnum getMetodoPagamento() {
         return metodoPagamento;
     }
@@ -129,5 +136,21 @@ public class RegistroDeMovimentacao {
 
     public Set<Lancamento> getParcelas() {
         return lancamentos;
+    }
+
+    public LocalDate getProximaRecorrencia() {
+        return Boolean.TRUE.equals(ehRecorrente) ? proximaRecorrencia : null;
+    }
+
+    public void setRecorrente(boolean recorrente) {
+        this.ehRecorrente = recorrente;
+        if (recorrente && proximaRecorrencia == null) {
+            this.proximaRecorrencia = dataLancamento.plusMonths(1);
+        }
+    }
+
+    public void avancarRecorrencia() {
+        YearMonth proximoMes = YearMonth.from(proximaRecorrencia).plusMonths(1);
+        proximaRecorrencia = proximoMes.atDay(Math.min(dataLancamento.getDayOfMonth(), proximoMes.lengthOfMonth()));
     }
 }

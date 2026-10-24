@@ -2,33 +2,47 @@ server:
   port: ${SERVER_PORT:8080}
   servlet:
     context-path: /api
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 
 spring:
   application:
     name: gestao-financeira
-  profiles:
-    active: dev
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+  jpa:
+    show-sql: false
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    clean-disabled: true
 
 api:
   security:
     token:
-      secret: ${JWT_SECRET:chave-jwt}
+      secret: ${JWT_SECRET}
 
 springdoc:
-  pathsToMatch: /**
+  api-docs:
+    enabled: false
   swagger-ui:
-    use-root-path: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health
-      base-path: /actuator
-  endpoint:
-    health:
-      show-details: always
+    enabled: false
 
 app:
+  agendamento:
+    financeiro:
+      cron: ${FINANCEIRO_SCHEDULER_CRON:0 5 0 * * *}
+      zone: ${FINANCEIRO_SCHEDULER_ZONE:America/Sao_Paulo}
+  usuario-inicial:
+    enabled: ${INITIAL_USER_ENABLED:false}
+    email: ${INITIAL_USER_EMAIL:}
+    senha: ${INITIAL_USER_PASSWORD:}
+    nome: ${INITIAL_USER_NAME:}
   cors:
-    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200,http://localhost:3000}
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:}

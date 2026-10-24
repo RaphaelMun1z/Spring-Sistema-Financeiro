@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB}_test
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+api:
+  security:
+    token:
+      secret: segredo-exclusivo-dos-testes-automatizados
+
+app:
+  cors:
+    allowed-origin: http://localhost:4200,http://localhost:3000

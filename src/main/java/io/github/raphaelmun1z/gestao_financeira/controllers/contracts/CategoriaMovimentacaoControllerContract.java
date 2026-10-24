@@ -25,6 +25,21 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 public interface CategoriaMovimentacaoControllerContract {
 
+    @Operation(summary = "Consultar orçamento por ID dentro da categoria")
+    ResponseEntity<OrcamentoResDTO> consultarOrcamentoPorId(@PathVariable String categoriaId, @PathVariable String orcamentoId);
+
+    @Operation(summary = "Editar categoria", description = "Atualiza os dados da categoria.")
+    ResponseEntity<CategoriaMovimentacaoResDTO> atualizar(@PathVariable String categoriaId, @RequestBody @Valid CategoriaDeMovimentacaoReqDTO data);
+
+    @Operation(summary = "Excluir categoria", description = "Exclui somente categorias sem movimentações ou orçamentos vinculados.")
+    ResponseEntity<Void> excluir(@PathVariable String categoriaId);
+
+    @Operation(summary = "Editar orçamento")
+    ResponseEntity<OrcamentoResDTO> atualizarOrcamento(@PathVariable String categoriaId, @PathVariable String orcamentoId, @RequestBody @Valid OrcamentoReqDTO data);
+
+    @Operation(summary = "Excluir orçamento")
+    ResponseEntity<Void> excluirOrcamento(@PathVariable String categoriaId, @PathVariable String orcamentoId);
+
     @Operation(
         summary = "Cadastrar categoria",
         description = "Cadastra uma nova categoria de movimentação financeira."

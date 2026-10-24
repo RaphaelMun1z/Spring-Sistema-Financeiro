@@ -7,13 +7,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "tb_categorias_de_movimentacao")
+@Table(name = "tb_categorias_de_movimentacao",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"nome", "autor_id"}))
 public class CategoriaDeMovimentacao {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String nome;
 
     private TipoCategoriaEnum tipo;
@@ -25,7 +26,7 @@ public class CategoriaDeMovimentacao {
     private Usuario autor;
 
     @OneToMany(mappedBy = "categoria")
-    private final Set<Orcamento> orcamentos = new HashSet<>();;
+    private final Set<Orcamento> orcamentos = new HashSet<>();
 
     public CategoriaDeMovimentacao() {
     }

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Locale;
 
 @Service
 public class AuthService {
@@ -30,7 +31,9 @@ public class AuthService {
     @Transactional
     public LoginResDTO login(LoginReqDTO data) {
         try {
-            var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.senha());
+            var usernamePassword = new UsernamePasswordAuthenticationToken(
+                data.email().trim().toLowerCase(Locale.ROOT), data.senha()
+            );
             var auth = this.authenticationManager.authenticate(usernamePassword);
             TokenDTO token = tokenService.generateToken((Usuario) Objects.requireNonNull(auth.getPrincipal()));
             return new LoginResDTO(token);

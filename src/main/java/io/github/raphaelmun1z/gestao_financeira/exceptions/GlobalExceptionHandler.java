@@ -20,7 +20,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import tools.jackson.databind.exc.InvalidFormatException;
 
-import java.nio.file.AccessDeniedException;
+import org.springframework.security.access.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -116,6 +116,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 errorMessage
             );
         });
+        ex.getBindingResult().getGlobalErrors().forEach(error -> errors.put(error.getObjectName(), error.getDefaultMessage()));
 
         return new ResponseEntity<>(
             errors,
@@ -162,6 +163,22 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(
             exceptionResponse,
             HttpStatus.NOT_FOUND
+        );
+    }
+
+    @ExceptionHandler(HistoricalDataUnavailableException.class)
+    public final ResponseEntity<ExceptionResponse> historicalDataUnavailableException(
+        HistoricalDataUnavailableException ex,
+        WebRequest request
+    ) {
+        ExceptionResponse exceptionResponse = new ExceptionResponse(
+            LocalDateTime.now().toString(),
+            List.of(ex.getMessage()),
+            request.getDescription(false)
+        );
+        return new ResponseEntity<>(
+            exceptionResponse,
+            HttpStatus.UNPROCESSABLE_ENTITY
         );
     }
 
@@ -244,7 +261,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         Throwable causaRaiz = ex.getMostSpecificCause();
-        String mensagemCausa = causaRaiz.getMessage().toLowerCase();
+        String mensagemCausa = String.valueOf(causaRaiz.getMessage()).toLowerCase(java.util.Locale.ROOT);
 
         if (mensagemCausa.contains("unique constraint") || mensagemCausa.contains(
             "duplicate entry") || mensagemCausa.contains("viola a restrição de unicidade")) {
@@ -307,7 +324,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(
             exceptionResponse,
-            HttpStatus.FORBIDDEN
+            HttpStatus.UNAUTHORIZED
         );
     }
 

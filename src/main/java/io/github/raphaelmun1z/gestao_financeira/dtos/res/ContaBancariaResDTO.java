@@ -8,6 +8,8 @@ public record ContaBancariaResDTO(
     String id,
     String nomeDoBanco,
     BigDecimal saldoCorrente,
+    BigDecimal saldoInicial,
+    java.time.LocalDate dataAbertura,
     BigDecimal creditoTotal,
     BigDecimal creditoUsado,
     BigDecimal creditoRestante
@@ -17,6 +19,8 @@ public record ContaBancariaResDTO(
             contaBancaria.getId(),
             contaBancaria.getNomeDoBanco(),
             contaBancaria.getSaldoCorrente(),
+            contaBancaria.getSaldoInicial(),
+            contaBancaria.getDataAbertura(),
             contaBancaria.getCreditoTotal(),
             contaBancaria.getCreditoUsado(),
             contaBancaria.getCreditoRestante()

@@ -1,25 +1,16 @@
-spring:
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/db_sistema_financeiro}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
-    hikari:
-      minimum-idle: 5
-      maximum-pool-size: 10
-      idle-timeout: 30000
-      connection-timeout: 30000
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:segredo-local-exclusivo-desenvolvimento}
 
-  jpa:
-    show-sql: false
-    open-in-view: false
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        jdbc:
-          lob:
-            non_contextual_creation: true
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
 
-  flyway:
-    enabled: false
+app:
+  cors:
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200,http://localhost:3000}
+  data-mock:
+    enabled: ${DATA_MOCK_ENABLED:false}

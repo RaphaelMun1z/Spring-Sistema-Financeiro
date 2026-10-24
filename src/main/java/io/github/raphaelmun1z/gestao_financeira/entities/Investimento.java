@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Entity
 @Table(
@@ -24,6 +25,8 @@ public class Investimento {
     private BigDecimal valorInicial;
     private BigDecimal valorCorrente;
     private Float jurosAoMes;
+    @Column(name = "ultima_competencia_juros", length = 7)
+    private YearMonth ultimaCompetenciaJuros;
 
     @ManyToOne
     @JoinColumn(name = "investidor_id", nullable = false)
@@ -46,6 +49,7 @@ public class Investimento {
         this.valorCorrente = valorCorrente;
         this.jurosAoMes = jurosAoMes;
         this.investidor = investidor;
+        this.ultimaCompetenciaJuros = YearMonth.from(dataInicio);
     }
 
     public String getId() {
@@ -86,5 +90,19 @@ public class Investimento {
 
     public Usuario getInvestidor() {
         return investidor;
+    }
+
+    public YearMonth getUltimaCompetenciaJuros() {
+        return ultimaCompetenciaJuros;
+    }
+
+    public void aplicarRendimentosAte(LocalDate hoje) {
+        YearMonth competencia = ultimaCompetenciaJuros.plusMonths(1);
+        BigDecimal taxa = BigDecimal.valueOf(jurosAoMes.doubleValue()).movePointLeft(2);
+        while (!competencia.atDay(Math.min(dataInicio.getDayOfMonth(), competencia.lengthOfMonth())).isAfter(hoje)) {
+            valorCorrente = valorCorrente.multiply(BigDecimal.ONE.add(taxa)).setScale(2, java.math.RoundingMode.HALF_UP);
+            ultimaCompetenciaJuros = competencia;
+            competencia = competencia.plusMonths(1);
+        }
     }
 }

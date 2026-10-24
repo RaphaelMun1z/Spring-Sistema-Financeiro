@@ -30,4 +30,20 @@ public class InvestimentoController implements InvestimentoControllerContract {
     public ResponseEntity<List<InvestimentoResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }
+
+    @GetMapping("/{investimentoId}")
+    public ResponseEntity<InvestimentoResDTO> consultarPorId(@PathVariable String investimentoId) {
+        return ResponseEntity.ok(service.consultarPorId(investimentoId));
+    }
+
+    @PutMapping("/{investimentoId}")
+    public ResponseEntity<InvestimentoResDTO> atualizar(@PathVariable String investimentoId, @RequestBody @Valid InvestimentoReqDTO data) {
+        return ResponseEntity.ok(service.atualizar(investimentoId, data));
+    }
+
+    @DeleteMapping("/{investimentoId}")
+    public ResponseEntity<Void> excluir(@PathVariable String investimentoId) {
+        service.excluir(investimentoId);
+        return ResponseEntity.noContent().build();
+    }
 }

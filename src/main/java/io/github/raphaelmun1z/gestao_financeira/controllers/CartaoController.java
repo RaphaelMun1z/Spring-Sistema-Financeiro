@@ -33,25 +33,23 @@ public class CartaoController implements CartaoControllerContract {
     @GetMapping("/{contaBancariaId}")
     @Override
     public ResponseEntity<List<CartaoResDTO>> consultarPorContaBancaria(@PathVariable String contaBancariaId) {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return ResponseEntity.ok(service.consultarPorContaBancaria(contaBancariaId));
     }
 
-    @GetMapping("/{cartaoId}/faturas")
-    @Override
-    public ResponseEntity<List<FaturaResDTO>> consultarFaturasPorCartaoEPeriodo(
-        @PathVariable String cartaoId,
-        @Valid @ModelAttribute ConsultaPorPeriodoReqDTO data
-    ) {
-        return ResponseEntity.ok(faturaService.consultarPorCartaoEPeriodo(cartaoId, data));
+    @PutMapping("/{cartaoId}")
+    public ResponseEntity<CartaoResDTO> atualizar(@PathVariable String cartaoId, @RequestBody @Valid CartaoReqDTO data) {
+        return ResponseEntity.ok(service.atualizar(cartaoId, data));
     }
 
-    @GetMapping("/faturas/{faturaId}")
-    public ResponseEntity<FaturaResDTO> consultarFaturaPorId(@PathVariable String faturaId) {
-        return ResponseEntity.ok(faturaService.consultarPorId(faturaId));
+    @DeleteMapping("/{cartaoId}")
+    public ResponseEntity<Void> excluir(@PathVariable String cartaoId) {
+        service.excluir(cartaoId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/faturas/{faturaId}/pagamento")
+    @Override
+    public ResponseEntity<FaturaResDTO> pagarFatura(@PathVariable String faturaId) {
+        return ResponseEntity.ok(faturaService.pagar(faturaId));
     }
 }

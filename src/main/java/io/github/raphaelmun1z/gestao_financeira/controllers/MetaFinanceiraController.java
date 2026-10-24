@@ -30,4 +30,20 @@ public class MetaFinanceiraController implements MetaFinanceiraControllerContrac
     public ResponseEntity<List<MetaFinanceiraResDTO>> consultarTodos() {
         return ResponseEntity.ok(service.consultarTodos());
     }
+
+    @GetMapping("/{metaId}")
+    public ResponseEntity<MetaFinanceiraResDTO> consultarPorId(@PathVariable String metaId) {
+        return ResponseEntity.ok(service.consultarPorId(metaId));
+    }
+
+    @PutMapping("/{metaId}")
+    public ResponseEntity<MetaFinanceiraResDTO> atualizar(@PathVariable String metaId, @RequestBody @Valid MetaFinanceiraReqDTO data) {
+        return ResponseEntity.ok(service.atualizar(metaId, data));
+    }
+
+    @DeleteMapping("/{metaId}")
+    public ResponseEntity<Void> excluir(@PathVariable String metaId) {
+        service.excluir(metaId);
+        return ResponseEntity.noContent().build();
+    }
 }
