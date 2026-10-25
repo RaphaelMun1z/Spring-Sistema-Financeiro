@@ -100,7 +100,7 @@ public interface ContaBancariaControllerContract {
 
     @Operation(
         summary = "Cadastrar registro de movimentação",
-        description = "Atualiza saldo ou limite e gera lançamentos atomicamente. Crédito exige 1 a 120 parcelas; compra no dia do fechamento entra no próximo ciclo. Voucher utiliza saldo próprio. Quando ehRecorrente=true, uma nova movimentação igual é gerada mensalmente sem data final."
+        description = "Atualiza saldo ou limite e gera lancamentos atomicamente. Credito exige 1 a 120 parcelas; compra no dia do fechamento entra no proximo ciclo. Voucher utiliza saldo proprio. dataLancamento deve ser hoje ou uma data passada. Quando ehRecorrente=true, a primeira repeticao e prevista para um mes apos dataLancamento e as seguintes sao geradas mensalmente sem data final."
     )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Registro cadastrado com sucesso."),

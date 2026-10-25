@@ -21,10 +21,13 @@ import java.util.Locale;
 public class UsuarioService {
     private final UsuarioRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final TelegramVinculoService telegramVinculoService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder,
+                          TelegramVinculoService telegramVinculoService) {
         this.repository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.telegramVinculoService = telegramVinculoService;
     }
 
     @Transactional
@@ -38,10 +41,12 @@ public class UsuarioService {
             throw new DuplicatedResourceException("Já existe um usuário cadastrado com este email.");
         }
         try {
-            Usuario usuario = repository.saveAndFlush(new Usuario(
+            Usuario usuario = new Usuario(
                 nome, email, passwordEncoder.encode(data.senha()),
                 io.github.raphaelmun1z.gestao_financeira.entities.enums.PapelDoUsuarioEnum.PADRAO
-            ));
+            );
+            telegramVinculoService.inicializarCodigo(usuario);
+            usuario = repository.saveAndFlush(usuario);
             return new UserDetailsResDTO(usuario);
         } catch (DataIntegrityViolationException exception) {
             throw new DuplicatedResourceException("Já existe um usuário cadastrado com este email.");

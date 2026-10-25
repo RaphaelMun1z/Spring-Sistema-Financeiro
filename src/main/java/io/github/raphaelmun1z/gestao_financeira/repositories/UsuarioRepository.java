@@ -8,5 +8,6 @@ import java.util.Optional;
 public interface UsuarioRepository extends JpaRepository<Usuario, String> {
     Optional<Usuario> findByEmail(String email);
     Optional<Usuario> findByTelegramLinkCode(String telegramLinkCode);
+    boolean existsByTelegramLinkCode(String telegramLinkCode);
     Optional<Usuario> findByTelegramChatId(Long telegramChatId);
 }

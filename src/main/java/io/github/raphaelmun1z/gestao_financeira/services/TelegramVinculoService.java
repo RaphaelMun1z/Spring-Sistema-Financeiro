@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
-import java.time.LocalDateTime;
+import java.util.HexFormat;
 
 @Service
 public class TelegramVinculoService {
@@ -20,26 +20,48 @@ public class TelegramVinculoService {
     }
 
     @Transactional
-    public TelegramVinculoResDTO gerarCodigo() {
+    public TelegramVinculoResDTO obterCodigo() {
+        Usuario usuario = usuarioAutenticado();
+        if (usuario.getTelegramLinkCode() == null) {
+            usuario.setTelegramLinkCode(novoCodigo());
+        }
+        return new TelegramVinculoResDTO(usuario.getTelegramLinkCode());
+    }
+
+    public void inicializarCodigo(Usuario usuario) {
+        if (usuario.getTelegramLinkCode() == null) {
+            usuario.setTelegramLinkCode(novoCodigo());
+        }
+    }
+
+    @Transactional
+    public TelegramVinculoResDTO alterarCodigo() {
+        Usuario usuario = usuarioAutenticado();
+        usuario.setTelegramLinkCode(novoCodigo());
+        return new TelegramVinculoResDTO(usuario.getTelegramLinkCode());
+    }
+
+    private Usuario usuarioAutenticado() {
         Usuario usuarioAutenticado = UsuarioService.obterUsuarioAutenticado();
-        Usuario usuario = repository.findById(usuarioAutenticado.getId())
+        return repository.findById(usuarioAutenticado.getId())
             .orElseThrow(() -> new NotFoundException("Usuário autenticado não encontrado."));
-        String codigo = String.valueOf(100000 + RANDOM.nextInt(900000));
-        LocalDateTime expiraEm = LocalDateTime.now().plusMinutes(10);
-        usuario.setTelegramLinkCode(codigo);
-        usuario.setTelegramLinkCodeExpiresAt(expiraEm);
-        return new TelegramVinculoResDTO(codigo, expiraEm);
+    }
+
+    private String novoCodigo() {
+        String codigo;
+        do {
+            byte[] bytes = new byte[32];
+            RANDOM.nextBytes(bytes);
+            codigo = HexFormat.of().formatHex(bytes);
+        } while (repository.existsByTelegramLinkCode(codigo));
+        return codigo;
     }
 
     @Transactional
     public Usuario vincular(Long chatId, String codigo) {
         Usuario usuario = repository.findByTelegramLinkCode(codigo)
-            .filter(item -> item.getTelegramLinkCodeExpiresAt() != null)
-            .filter(item -> item.getTelegramLinkCodeExpiresAt().isAfter(LocalDateTime.now()))
-            .orElseThrow(() -> new NotFoundException("Código de vínculo do Telegram inválido ou expirado."));
+            .orElseThrow(() -> new NotFoundException("Código de vínculo do Telegram inválido."));
         usuario.setTelegramChatId(chatId);
-        usuario.setTelegramLinkCode(null);
-        usuario.setTelegramLinkCodeExpiresAt(null);
         return usuario;
     }
 }
