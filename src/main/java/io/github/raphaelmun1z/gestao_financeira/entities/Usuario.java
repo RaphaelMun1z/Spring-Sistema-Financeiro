@@ -22,6 +22,10 @@ public class Usuario implements UserDetails {
     private String senha;
     private String nomeCompleto;
     private PapelDoUsuarioEnum papel;
+    @Column(unique = true)
+    private Long telegramChatId;
+    private String telegramLinkCode;
+    private java.time.LocalDateTime telegramLinkCodeExpiresAt;
 
     @OneToMany(mappedBy = "autor")
     private final Set<CategoriaDeMovimentacao> categoriasDeMovimentacao = new HashSet<>();
@@ -89,6 +93,15 @@ public class Usuario implements UserDetails {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Long getTelegramChatId() { return telegramChatId; }
+    public void setTelegramChatId(Long telegramChatId) { this.telegramChatId = telegramChatId; }
+    public String getTelegramLinkCode() { return telegramLinkCode; }
+    public void setTelegramLinkCode(String telegramLinkCode) { this.telegramLinkCode = telegramLinkCode; }
+    public java.time.LocalDateTime getTelegramLinkCodeExpiresAt() { return telegramLinkCodeExpiresAt; }
+    public void setTelegramLinkCodeExpiresAt(java.time.LocalDateTime telegramLinkCodeExpiresAt) {
+        this.telegramLinkCodeExpiresAt = telegramLinkCodeExpiresAt;
     }
 
     public Set<CategoriaDeMovimentacao> getCategoriasDeMovimentacao() {

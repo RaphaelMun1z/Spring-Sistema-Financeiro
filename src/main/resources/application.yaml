@@ -34,6 +34,12 @@ springdoc:
   swagger-ui:
     enabled: false
 
+telegram:
+  bot:
+    enabled: ${TELEGRAM_BOT_ENABLED:false}
+    token: ${TELEGRAM_BOT_TOKEN:}
+    poll-interval-ms: ${TELEGRAM_BOT_POLL_INTERVAL_MS:1500}
+
 app:
   agendamento:
     financeiro:
