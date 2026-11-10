@@ -83,10 +83,9 @@ public class RegistroDeMovimentacaoService {
             }
             CartaoCredito cartaoCredito = (CartaoCredito) cartao;
             BigDecimal disponivel = cartaoCredito.getLimiteCredito().subtract(faturaService.consultarCreditoUtilizado(cartao.getId()));
-            if (disponivel.compareTo(data.valorTotal()) < 0 || conta.getCreditoRestante().compareTo(data.valorTotal()) < 0) {
+            if (disponivel.compareTo(data.valorTotal()) < 0) {
                 throw new BusinessException("Limite de crédito insuficiente.");
             }
-            conta.setCreditoRestante(conta.getCreditoRestante().subtract(data.valorTotal()));
         } else {
             if (parcelas != 1) {
                 throw new BusinessException("Somente compras no crédito podem ser parceladas.");
@@ -175,7 +174,6 @@ public class RegistroDeMovimentacaoService {
         }
         lancamentoService.excluirPorRegistro(registro);
         if (registro.getMetodoPagamento() == MetodoPagamentoEnum.CARTAO_CREDITO) {
-            conta.setCreditoRestante(conta.getCreditoRestante().add(registro.getValorTotal()));
         } else {
             atualizarSaldo(conta, registro.getCartao(), registro.getCategoria(), registro.getValorTotal(), true);
         }
@@ -234,11 +232,9 @@ public class RegistroDeMovimentacaoService {
             CartaoCredito cartaoCredito = (CartaoCredito) cartao;
             BigDecimal utilizado = faturaService.consultarCreditoUtilizadoAgendado(cartaoCredito.getId());
             BigDecimal disponivel = cartaoCredito.getLimiteCredito().subtract(utilizado);
-            if (disponivel.compareTo(origem.getValorTotal()) < 0
-                || conta.getCreditoRestante().compareTo(origem.getValorTotal()) < 0) {
+            if (disponivel.compareTo(origem.getValorTotal()) < 0) {
                 throw new BusinessException("Crédito insuficiente para gerar a recorrência.");
             }
-            conta.setCreditoRestante(conta.getCreditoRestante().subtract(origem.getValorTotal()));
         } else {
             atualizarSaldo(conta, cartao, origem.getCategoria(), origem.getValorTotal(), false);
         }

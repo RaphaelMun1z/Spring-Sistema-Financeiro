@@ -1,6 +1,8 @@
 package io.github.raphaelmun1z.gestao_financeira.services;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CartaoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.req.AjusteCreditoCartaoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.AjusteCreditoCartaoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoCreditoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoDebitoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO;
@@ -15,6 +17,8 @@ import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundExcept
 import io.github.raphaelmun1z.gestao_financeira.repositories.CartaoRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.FaturaRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.RegistroDeMovimentacaoRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.AjusteCreditoCartaoRepository;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.AjusteCreditoCartao;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
 import io.github.raphaelmun1z.gestao_financeira.entities.enums.StatusFaturaEnum;
 import org.springframework.stereotype.Service;
@@ -28,12 +32,34 @@ public class CartaoService {
     private final ContaBancariaService contaBancariaService;
     private final FaturaRepository faturaRepository;
     private final RegistroDeMovimentacaoRepository registroRepository;
+    private final FaturaService faturaService;
+    private final AjusteCreditoCartaoRepository ajusteRepository;
 
-    public CartaoService(CartaoRepository cartaoRepository, ContaBancariaService contaBancariaService, FaturaRepository faturaRepository, RegistroDeMovimentacaoRepository registroRepository) {
+    public CartaoService(CartaoRepository cartaoRepository, ContaBancariaService contaBancariaService, FaturaRepository faturaRepository, RegistroDeMovimentacaoRepository registroRepository, FaturaService faturaService, AjusteCreditoCartaoRepository ajusteRepository) {
         this.repository = cartaoRepository;
         this.contaBancariaService = contaBancariaService;
         this.faturaRepository = faturaRepository;
         this.registroRepository = registroRepository;
+        this.faturaService = faturaService;
+        this.ajusteRepository = ajusteRepository;
+    }
+
+    @Transactional
+    public AjusteCreditoCartaoResDTO ajustarCredito(String id, AjusteCreditoCartaoReqDTO data) {
+        Cartao cartao = buscarEntidadePorId(id);
+        if (!(cartao instanceof CartaoCredito credito)) {
+            throw new BusinessException("O ajuste de crédito exige um cartão de crédito.");
+        }
+        contaBancariaService.buscarEntidadeParaAtualizar(credito.getContaBancariaId());
+        if (data.creditoUtilizadoDesejado().compareTo(credito.getLimiteCredito()) > 0) {
+            throw new BusinessException("O crédito utilizado desejado não pode exceder o limite do cartão.");
+        }
+        var usuario = UsuarioService.obterUsuarioAutenticado();
+        var utilizadoAtual = faturaService.consultarCreditoUtilizado(credito);
+        var faturasAbertas = faturaService.consultarTotalFaturasEmAberto(credito.getId());
+        var ajuste = ajusteRepository.save(new AjusteCreditoCartao(credito, usuario, data.creditoUtilizadoDesejado(),
+            utilizadoAtual, faturasAbertas));
+        return new AjusteCreditoCartaoResDTO(ajuste);
     }
 
     @Transactional
@@ -87,7 +113,7 @@ public class CartaoService {
             data.cartaoCredito().diaFechamento(),
             data.cartaoCredito().diaVencimento()
         );
-        return new CartaoCreditoResDTO(repository.save(cc));
+        return new CartaoCreditoResDTO(repository.save(cc), java.math.BigDecimal.ZERO);
     }
 
     private CartaoResDTO cadastrarCartaoDeDebito(ContaBancaria contaBancaria, CartaoReqDTO data) {
@@ -119,7 +145,7 @@ public class CartaoService {
         contaBancariaService.buscarEntidadePorId(contaBancariaId);
         return repository.findByContaBancaria_Id(contaBancariaId).stream()
             .<CartaoResDTO>map(cartao -> switch (cartao) {
-                case CartaoCredito cc -> new CartaoCreditoResDTO(cc);
+                case CartaoCredito cc -> new CartaoCreditoResDTO(cc, faturaService.consultarCreditoUtilizado(cc));
                 case CartaoDebito cd -> new CartaoDebitoResDTO(cd);
                 case CartaoVoucher cv -> new CartaoVoucherResDTO(cv);
                 default -> throw new IllegalStateException("Tipo de cartão desconhecido.");
@@ -143,6 +169,9 @@ public class CartaoService {
                 && (!credito.getDiaFechamento().equals(data.cartaoCredito().diaFechamento())
                 || !credito.getDiaVencimento().equals(data.cartaoCredito().diaVencimento()))) {
                 throw new BusinessException("Não é possível alterar o calendário de um cartão com faturas.");
+            }
+            if (data.cartaoCredito().limiteCredito().compareTo(faturaService.consultarCreditoUtilizado(credito)) < 0) {
+                throw new BusinessException("O limite não pode ser menor que o crédito comprometido em faturas não pagas.");
             }
             credito.setLimiteCredito(data.cartaoCredito().limiteCredito());
             credito.setDiaFechamento(data.cartaoCredito().diaFechamento());
@@ -175,7 +204,7 @@ public class CartaoService {
 
     private CartaoResDTO converter(Cartao cartao) {
         return switch (cartao) {
-            case CartaoCredito cc -> new CartaoCreditoResDTO(cc);
+            case CartaoCredito cc -> new CartaoCreditoResDTO(cc, faturaService.consultarCreditoUtilizado(cc));
             case CartaoDebito cd -> new CartaoDebitoResDTO(cd);
             case CartaoVoucher cv -> new CartaoVoucherResDTO(cv);
             default -> throw new IllegalStateException("Tipo de cartão desconhecido.");

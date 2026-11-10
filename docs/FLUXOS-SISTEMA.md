@@ -160,6 +160,12 @@ flowchart TD
     N --> O[Mapear por subtipo e retornar 200]
 ```
 
+### Ajuste de crédito utilizado
+
+`POST /cartoes/{cartaoId}/ajustes-credito` recebe `creditoUtilizadoDesejado`, exige JWT e aceita valores de zero até o limite do cartão, inclusive. O registro guarda cartão, usuário, instante, crédito utilizado anterior e total das faturas abertas no momento do ajuste. A operação não cria movimentação, compra, lançamento ou fatura.
+
+O crédito usado exibido no cartão e agregado na conta considera o ajuste mais recente: `máximo(0, total atual das faturas não pagas + crédito utilizado desejado - total das faturas não pagas no instante do ajuste)`. Assim o valor alinhado substitui o total anterior no instante do ajuste; compras registradas depois aparecem nos totais atuais das faturas e aumentam o crédito usado. Ajustes posteriores recalculam a diferença sobre o total corrente. As compras e seus lançamentos históricos permanecem intactos. A mesma conta é bloqueada durante ajustes e compras para serializar essas alterações.
+
 ## 8. Cadastro de movimentação: todos os métodos de pagamento
 
 ```mermaid
@@ -331,7 +337,7 @@ flowchart TD
 | AuthController | `POST /auth/acessar`, `GET /auth/me` |
 | ContaBancariaController | `POST /contas-bancarias`, `GET /contas-bancarias`, consultas e exclusão de movimentações, lançamentos |
 | CategoriaMovimentacaoController | cadastro/consulta de categorias e orçamentos |
-| CartaoController | cadastro/consulta de cartões, consulta e pagamento de faturas |
+| CartaoController | cadastro/consulta de cartões, ajuste de crédito, consulta e pagamento de faturas |
 | InvestimentoController | cadastro e consulta de investimentos |
 | MetaFinanceiraController | cadastro e consulta de metas financeiras |
 

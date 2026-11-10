@@ -111,7 +111,7 @@ class FluxoFinanceiroTests {
         }
         assertThat(referencias).containsExactlyInAnyOrder("2024-03", "2024-04", "2024-05");
         request("DELETE", "/contas-bancarias/registros-de-movimentacao/" + compra.get("id").asText(), null, token, 204);
-        verificarConta("1000.00", "1000.00");
+        verificarConta("1000.00", "0.00");
         assertThat(get("/contas-bancarias/" + conta + "/lancamentos" + PERIODO).size()).isZero();
         for (JsonNode fatura : get("/cartoes/" + credito + "/faturas" + PERIODO)) {
             assertThat(fatura.get("valorTotal").decimalValue()).isEqualByComparingTo("0");
@@ -120,15 +120,57 @@ class FluxoFinanceiroTests {
     }
 
     @Test
+    void ajustarCreditoAlinhaLimiteEComprasPosterioresSomamSemAlterarComprasHistoricas() throws Exception {
+        String credito = cartao("CREDITO", Map.of("limiteCredito", 1000, "diaFechamento", 10, "diaVencimento", 17));
+        movimentar("CARTAO_CREDITO", saida, "100.00", credito, 1, "2024-01-05");
+        JsonNode faturaAntes = get("/cartoes/" + credito + "/faturas" + PERIODO).get(0);
+        String faturaId = faturaAntes.get("id").asText();
+
+        JsonNode ajuste = post("/cartoes/" + credito + "/ajustes-credito", Map.of("creditoUtilizadoDesejado", "250.00"));
+        assertThat(ajuste.get("creditoUtilizadoAnterior").decimalValue()).isEqualByComparingTo("100.00");
+        assertThat(ajuste.get("creditoUtilizadoDesejado").decimalValue()).isEqualByComparingTo("250.00");
+        assertThat(ajuste.get("creditoDisponivel").decimalValue()).isEqualByComparingTo("750.00");
+        assertThat(ajuste.get("usuarioId").asText()).isNotBlank();
+        assertThat(ajuste.get("registradoEm").asText()).isNotBlank();
+        assertThat(get("/cartoes/" + credito + "/faturas" + PERIODO).get(0).get("valorTotal").decimalValue())
+            .isEqualByComparingTo("100.00");
+        assertThat(get("/cartoes/" + credito + "/faturas" + PERIODO).get(0).get("lancamentos").size()).isEqualTo(1);
+
+        movimentar("CARTAO_CREDITO", saida, "40.00", credito, 1, "2024-02-05");
+        JsonNode cartaoResumo = get("/cartoes/" + conta).get(0);
+        assertThat(cartaoResumo.get("id").asText()).isEqualTo(credito);
+        assertThat(cartaoResumo.get("creditoUsado").decimalValue()).isEqualByComparingTo("290.00");
+        assertThat(cartaoResumo.get("creditoRestante").decimalValue()).isEqualByComparingTo("710.00");
+        verificarConta("1000.00", "710.00");
+        JsonNode faturaHistorica = get("/cartoes/" + credito + "/faturas" + PERIODO).get(0);
+        assertThat(faturaHistorica.get("id").asText()).isEqualTo(faturaId);
+        assertThat(faturaHistorica.get("valorTotal").decimalValue()).isEqualByComparingTo("100.00");
+        assertThat(faturaHistorica.get("lancamentos").size()).isEqualTo(1);
+    }
+
+    @Test
+    void validarLimitesDoAjusteDeCredito() throws Exception {
+        String credito = cartao("CREDITO", Map.of("limiteCredito", 100, "diaFechamento", 10, "diaVencimento", 17));
+        JsonNode ajusteZero = post("/cartoes/" + credito + "/ajustes-credito", Map.of("creditoUtilizadoDesejado", "0.00"));
+        assertThat(ajusteZero.get("creditoDisponivel").decimalValue()).isEqualByComparingTo("100.00");
+        JsonNode ajusteLimite = post("/cartoes/" + credito + "/ajustes-credito", Map.of("creditoUtilizadoDesejado", "100.00"));
+        assertThat(ajusteLimite.get("creditoDisponivel").decimalValue()).isEqualByComparingTo("0.00");
+        for (String valor : List.of("-0.01", "100.01", "1.001")) {
+            request("POST", "/cartoes/" + credito + "/ajustes-credito", Map.of("creditoUtilizadoDesejado", valor), token, 400);
+        }
+        assertThat(get("/cartoes/" + conta).get(0).get("creditoUsado").decimalValue()).isEqualByComparingTo("100.00");
+    }
+
+    @Test
     void cancelarSaidaERecargaEstornaSaldosSemAfetarOutrosRecursos() throws Exception {
         JsonNode movimento = movimentar("PIX", saida, "50.00", null, 1, "2024-01-05");
         request("DELETE", "/contas-bancarias/registros-de-movimentacao/" + movimento.get("id").asText(), null, token, 204);
-        verificarConta("1000.00", "1000.00");
+        verificarConta("1000.00", "0.00");
         String voucher = cartao("VOUCHER", Map.of("tipoVoucher", "VA_VR", "valorRecarga", 100, "diaRecarga", 10));
         JsonNode recarga = movimentar("VOUCHER", entrada, "100.00", voucher, 1, "2024-01-05");
         movimentar("VOUCHER", saida, "80.00", voucher, 1, "2024-01-05");
         request("DELETE", "/contas-bancarias/registros-de-movimentacao/" + recarga.get("id").asText(), null, token, 400);
-        verificarConta("1000.00", "1000.00");
+        verificarConta("1000.00", "0.00");
     }
 
     @Test
@@ -152,7 +194,7 @@ class FluxoFinanceiroTests {
         for (int parcelas : List.of(0, -1, 121)) {
             rejeitarMovimentacao("CARTAO_CREDITO", saida, "1.00", credito, parcelas);
         }
-        verificarConta("1000.00", "1000.00");
+        verificarConta("1000.00", "0.00");
         assertThat(get("/contas-bancarias/" + conta + "/lancamentos" + PERIODO).size()).isZero();
         assertThat(get("/cartoes/" + credito + "/faturas" + PERIODO).size()).isZero();
     }
@@ -164,7 +206,7 @@ class FluxoFinanceiroTests {
         String fatura = get("/cartoes/" + credito + "/faturas" + PERIODO).get(0).get("id").asText();
         post("/cartoes/faturas/" + fatura + "/pagamento", Map.of());
         rejeitarMovimentacao("CARTAO_CREDITO", saida, "90.00", credito, 3);
-        verificarConta("970.00", "1000.00");
+        verificarConta("970.00", "0.00");
         assertThat(get("/contas-bancarias/" + conta + "/registros-de-movimentacao" + PERIODO).size()).isEqualTo(1);
         assertThat(get("/cartoes/" + credito + "/faturas" + PERIODO).size()).isEqualTo(1);
     }
@@ -211,7 +253,7 @@ class FluxoFinanceiroTests {
         for (CompletableFuture<HttpResponse<String>> resposta : respostas) {
             assertThat(resposta.join().statusCode()).isEqualTo(200);
         }
-        verificarConta("880.00", "1000.00");
+        verificarConta("880.00", "0.00");
         assertThat(get("/contas-bancarias/" + conta + "/lancamentos" + PERIODO).size()).isEqualTo(12);
     }
 
@@ -228,7 +270,7 @@ class FluxoFinanceiroTests {
         for (CompletableFuture<HttpResponse<String>> resposta : respostas) {
             assertThat(resposta.join().statusCode()).isEqualTo(200);
         }
-        verificarConta("900.00", "1000.00");
+        verificarConta("900.00", "0.00");
     }
 
     @Test

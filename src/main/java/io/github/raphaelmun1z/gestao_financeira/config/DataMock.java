@@ -200,7 +200,6 @@ public class DataMock implements CommandLineRunner {
                                            BigDecimal total, int parcelas, LocalDate data, String descricao) {
         RegistroDeMovimentacao registro = registroRepository.save(new RegistroDeMovimentacao(
             total, data, descricao, MetodoPagamentoEnum.CARTAO_CREDITO, false, parcelas, categoria, conta, cartao));
-        conta.setCreditoRestante(conta.getCreditoRestante().subtract(total));
         BigDecimal base = total.divide(BigDecimal.valueOf(parcelas), 2, RoundingMode.DOWN);
         int centavosRestantes = total.subtract(base.multiply(BigDecimal.valueOf(parcelas)))
             .movePointRight(2).intValueExact();
@@ -222,7 +221,6 @@ public class DataMock implements CommandLineRunner {
     private void pagarMock(Fatura fatura, ContaBancaria conta, LocalDate data) {
         fatura.pagar();
         conta.setSaldoCorrente(conta.getSaldoCorrente().subtract(fatura.getValorTotal()));
-        conta.setCreditoRestante(conta.getCreditoRestante().add(fatura.getValorTotal()));
         pagamentoRepository.save(new PagamentoFatura(fatura, conta, fatura.getValorTotal(), data));
     }
 }

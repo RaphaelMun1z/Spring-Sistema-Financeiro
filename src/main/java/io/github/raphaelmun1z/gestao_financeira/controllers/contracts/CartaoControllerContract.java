@@ -1,8 +1,10 @@
 package io.github.raphaelmun1z.gestao_financeira.controllers.contracts;
 
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CartaoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.req.AjusteCreditoCartaoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.AjusteCreditoCartaoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.FaturaResDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,6 +27,16 @@ import java.util.List;
 )
 @SecurityRequirement(name = "bearerAuth")
 public interface CartaoControllerContract {
+
+    @Operation(summary = "Ajustar crédito utilizado", description = "Alinha o crédito utilizado do cartão ao valor informado e mantém histórico auditável. Compras e faturas existentes não são alteradas.")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Ajuste registrado."),
+        @ApiResponse(responseCode = "400", description = "Valor inválido, negativo ou acima do limite; cartão não é de crédito."),
+        @ApiResponse(responseCode = "401", description = "Usuário não autenticado."),
+        @ApiResponse(responseCode = "404", description = "Cartão não encontrado para o usuário autenticado.")
+    })
+    ResponseEntity<AjusteCreditoCartaoResDTO> ajustarCredito(
+        @PathVariable String cartaoId, @RequestBody @Valid AjusteCreditoCartaoReqDTO data);
 
     @Operation(summary = "Editar cartão", description = "Edita o apelido e as configurações do cartão; calendários com faturas não podem ser alterados.")
     ResponseEntity<CartaoResDTO> atualizar(@PathVariable String cartaoId, @RequestBody @Valid CartaoReqDTO data);

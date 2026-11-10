@@ -15,15 +15,19 @@ public record ContaBancariaResDTO(
     BigDecimal creditoRestante
 ) {
     public ContaBancariaResDTO(ContaBancaria contaBancaria) {
+        this(contaBancaria, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO);
+    }
+
+    public ContaBancariaResDTO(ContaBancaria contaBancaria, BigDecimal creditoTotal, BigDecimal creditoUsado, BigDecimal creditoRestante) {
         this(
             contaBancaria.getId(),
             contaBancaria.getNomeDoBanco(),
             contaBancaria.getSaldoCorrente(),
             contaBancaria.getSaldoInicial(),
             contaBancaria.getDataAbertura(),
-            contaBancaria.getCreditoTotal(),
-            contaBancaria.getCreditoUsado(),
-            contaBancaria.getCreditoRestante()
+            creditoTotal,
+            creditoUsado,
+            creditoRestante
         );
     }
 }

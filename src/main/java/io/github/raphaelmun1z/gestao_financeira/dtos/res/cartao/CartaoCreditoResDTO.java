@@ -11,16 +11,24 @@ public record CartaoCreditoResDTO(
     TipoCartaoEnum tipoCartao,
     String contaBancariaId,
     BigDecimal limiteCredito,
+    BigDecimal creditoUsado,
+    BigDecimal creditoRestante,
     Integer diaFechamento,
     Integer diaVencimento
 ) implements CartaoResDTO {
     public CartaoCreditoResDTO(CartaoCredito cc) {
+        this(cc, BigDecimal.ZERO);
+    }
+
+    public CartaoCreditoResDTO(CartaoCredito cc, BigDecimal creditoUsado) {
         this(
             cc.getId(),
             cc.getApelido(),
             TipoCartaoEnum.CREDITO,
             cc.getContaBancariaId(),
             cc.getLimiteCredito(),
+            creditoUsado,
+            cc.getLimiteCredito().subtract(creditoUsado),
             cc.getDiaFechamento(),
             cc.getDiaVencimento()
         );

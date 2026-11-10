@@ -11,7 +11,9 @@ import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.PagamentoF
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundException;
 import io.github.raphaelmun1z.gestao_financeira.repositories.FaturaRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.CartaoRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.PagamentoFaturaRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.AjusteCreditoCartaoRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +28,18 @@ import java.util.List;
 @Transactional
 public class FaturaService {
     private final FaturaRepository repository;
-    private final CartaoService cartaoService;
+    private final CartaoRepository cartaoRepository;
     private final ContaBancariaService contaBancariaService;
     private final PagamentoFaturaRepository pagamentoRepository;
+    private final AjusteCreditoCartaoRepository ajusteRepository;
 
-    public FaturaService(FaturaRepository repository, CartaoService cartaoService, ContaBancariaService contaBancariaService,
-                         PagamentoFaturaRepository pagamentoRepository) {
+    public FaturaService(FaturaRepository repository, CartaoRepository cartaoRepository, ContaBancariaService contaBancariaService,
+                         PagamentoFaturaRepository pagamentoRepository, AjusteCreditoCartaoRepository ajusteRepository) {
         this.repository = repository;
-        this.cartaoService = cartaoService;
+        this.cartaoRepository = cartaoRepository;
         this.contaBancariaService = contaBancariaService;
         this.pagamentoRepository = pagamentoRepository;
+        this.ajusteRepository = ajusteRepository;
     }
 
     public Fatura consultarEntidadePorId(String id) {
@@ -44,7 +48,9 @@ public class FaturaService {
     }
 
     private CartaoCredito buscarCartaoCredito(String id) {
-        Cartao cartao = cartaoService.buscarEntidadePorId(id);
+        Cartao cartao = cartaoRepository.findByIdAndContaBancaria_TitularId(
+                id, UsuarioService.obterUsuarioAutenticado().getId())
+            .orElseThrow(() -> new NotFoundException("Cartão não encontrado!"));
         if (!(cartao instanceof CartaoCredito credito)) {
             throw new BusinessException("A consulta de faturas exige um cartão de crédito.");
         }
@@ -63,12 +69,28 @@ public class FaturaService {
     }
 
     BigDecimal consultarCreditoUtilizadoAgendado(String cartaoId) {
-        return repository.somarTotalPorCartaoEStatusDiferente(cartaoId, StatusFaturaEnum.PAGA);
+        return calcularCreditoUtilizado(cartaoId);
     }
 
     public BigDecimal consultarCreditoUtilizado(String cartaoId) {
         buscarCartaoCredito(cartaoId);
+        return calcularCreditoUtilizado(cartaoId);
+    }
+
+    BigDecimal consultarCreditoUtilizado(CartaoCredito cartao) {
+        return calcularCreditoUtilizado(cartao.getId());
+    }
+
+    BigDecimal consultarTotalFaturasEmAberto(String cartaoId) {
         return repository.somarTotalPorCartaoEStatusDiferente(cartaoId, StatusFaturaEnum.PAGA);
+    }
+
+    private BigDecimal calcularCreditoUtilizado(String cartaoId) {
+        BigDecimal faturasEmAberto = repository.somarTotalPorCartaoEStatusDiferente(cartaoId, StatusFaturaEnum.PAGA);
+        return ajusteRepository.findFirstByCartaoCredito_IdOrderByRegistradoEmDescIdDesc(cartaoId)
+                .map(ajuste -> faturasEmAberto.add(ajuste.getCreditoUtilizadoDesejado()
+                .subtract(ajuste.getCreditoFaturasAbertasNoAjuste())).max(BigDecimal.ZERO))
+            .orElse(faturasEmAberto);
     }
 
     public FaturaResDTO consultarPorId(String id) {
@@ -108,7 +130,6 @@ public class FaturaService {
         }
         fatura.pagar();
         conta.setSaldoCorrente(conta.getSaldoCorrente().subtract(fatura.getValorTotal()));
-        conta.setCreditoRestante(conta.getCreditoRestante().add(fatura.getValorTotal()));
         pagamentoRepository.save(new PagamentoFatura(fatura, conta, fatura.getValorTotal(), java.time.LocalDate.now()));
         return new FaturaResDTO(fatura);
     }

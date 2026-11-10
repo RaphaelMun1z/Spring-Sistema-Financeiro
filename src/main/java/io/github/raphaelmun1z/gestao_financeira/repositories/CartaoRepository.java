@@ -21,6 +21,13 @@ public interface CartaoRepository extends JpaRepository<Cartao, String> {
 
     List<Cartao> findByContaBancaria_Id(String idContaBancaria);
 
+    @Query("select c from CartaoCredito c where c.contaBancaria.id = :contaId order by c.id")
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<CartaoCredito> findCartoesDeCreditoDaContaParaAtualizar(@org.springframework.data.repository.query.Param("contaId") String contaId);
+
+    @Query("select c from CartaoCredito c where c.contaBancaria.id = :contaId order by c.id")
+    List<CartaoCredito> findCartoesDeCreditoDaConta(@org.springframework.data.repository.query.Param("contaId") String contaId);
+
     Optional<Cartao> findByIdAndContaBancaria_TitularId(String id, String titularId);
 
     Optional<Cartao> findByIdAndContaBancaria_Id(String id, String contaBancariaId);

@@ -2,8 +2,10 @@ package io.github.raphaelmun1z.gestao_financeira.controllers;
 
 import io.github.raphaelmun1z.gestao_financeira.controllers.contracts.CartaoControllerContract;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.CartaoReqDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.req.AjusteCreditoCartaoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.req.ConsultaPorPeriodoReqDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.CartaoResDTO;
+import io.github.raphaelmun1z.gestao_financeira.dtos.res.cartao.AjusteCreditoCartaoResDTO;
 import io.github.raphaelmun1z.gestao_financeira.dtos.res.movimentacao.FaturaResDTO;
 import io.github.raphaelmun1z.gestao_financeira.services.CartaoService;
 import io.github.raphaelmun1z.gestao_financeira.services.FaturaService;
@@ -39,6 +41,12 @@ public class CartaoController implements CartaoControllerContract {
     @PutMapping("/{cartaoId}")
     public ResponseEntity<CartaoResDTO> atualizar(@PathVariable String cartaoId, @RequestBody @Valid CartaoReqDTO data) {
         return ResponseEntity.ok(service.atualizar(cartaoId, data));
+    }
+
+    @PostMapping("/{cartaoId}/ajustes-credito")
+    public ResponseEntity<AjusteCreditoCartaoResDTO> ajustarCredito(
+        @PathVariable String cartaoId, @RequestBody @Valid AjusteCreditoCartaoReqDTO data) {
+        return ResponseEntity.ok(service.ajustarCredito(cartaoId, data));
     }
 
     @DeleteMapping("/{cartaoId}")

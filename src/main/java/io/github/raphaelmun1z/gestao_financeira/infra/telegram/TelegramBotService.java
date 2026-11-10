@@ -4,6 +4,7 @@ import io.github.raphaelmun1z.gestao_financeira.dtos.req.RegistroMovimentacaoReq
 import io.github.raphaelmun1z.gestao_financeira.entities.CategoriaDeMovimentacao;
 import io.github.raphaelmun1z.gestao_financeira.entities.ContaBancaria;
 import io.github.raphaelmun1z.gestao_financeira.entities.Usuario;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.CartaoCredito;
 import io.github.raphaelmun1z.gestao_financeira.entities.enums.MetodoPagamentoEnum;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.Fatura;
 import io.github.raphaelmun1z.gestao_financeira.entities.movimentacao.RegistroDeMovimentacao;
@@ -233,15 +234,18 @@ public class TelegramBotService {
         StringBuilder texto = new StringBuilder();
         for (int index = 0; index < contas.size(); index++) {
             ContaBancaria conta = contas.get(index);
-            BigDecimal usado = conta.getCreditoTotal().subtract(conta.getCreditoRestante());
-            BigDecimal percentualUsado = conta.getCreditoTotal().signum() == 0
+            BigDecimal total = cartaoRepository.findByContaBancaria_Id(conta.getId()).stream()
+                .filter(CartaoCredito.class::isInstance).map(CartaoCredito.class::cast)
+                .map(CartaoCredito::getLimiteCredito).reduce(BigDecimal.ZERO, BigDecimal::add);
+            BigDecimal usado = faturasPorConta.getOrDefault(conta.getId(), BigDecimal.ZERO);
+            BigDecimal percentualUsado = total.signum() == 0
                 ? BigDecimal.ZERO
-                : usado.multiply(BigDecimal.valueOf(100)).divide(conta.getCreditoTotal(), 2, java.math.RoundingMode.HALF_UP);
+                : usado.multiply(BigDecimal.valueOf(100)).divide(total, 2, java.math.RoundingMode.HALF_UP);
             if (index > 0) texto.append("\n\n");
             texto.append("Conta ").append(index + 1).append("\n")
                 .append("Nome: ").append(conta.getNomeDoBanco()).append("\n")
                 .append("Saldo: ").append(moeda.format(conta.getSaldoCorrente())).append("\n")
-                .append("Credito restante: ").append(moeda.format(conta.getCreditoRestante())).append("\n")
+                .append("Credito restante: ").append(moeda.format(total.subtract(usado))).append("\n")
                 .append("Credito usado: ").append(percentual.format(percentualUsado)).append("%\n")
                 .append("Faturas pendentes: ").append(moeda.format(
                     faturasPorConta.getOrDefault(conta.getId(), BigDecimal.ZERO)

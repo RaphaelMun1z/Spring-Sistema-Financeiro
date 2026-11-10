@@ -8,6 +8,11 @@ import io.github.raphaelmun1z.gestao_financeira.exceptions.models.NotFoundExcept
 import io.github.raphaelmun1z.gestao_financeira.repositories.ContaBancariaRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.CartaoRepository;
 import io.github.raphaelmun1z.gestao_financeira.repositories.RegistroDeMovimentacaoRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.FaturaRepository;
+import io.github.raphaelmun1z.gestao_financeira.repositories.AjusteCreditoCartaoRepository;
+import io.github.raphaelmun1z.gestao_financeira.entities.cartao.CartaoCredito;
+import io.github.raphaelmun1z.gestao_financeira.entities.enums.StatusFaturaEnum;
+import java.math.BigDecimal;
 import io.github.raphaelmun1z.gestao_financeira.exceptions.models.BusinessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +24,15 @@ public class ContaBancariaService {
     private final ContaBancariaRepository repository;
     private final CartaoRepository cartaoRepository;
     private final RegistroDeMovimentacaoRepository registroRepository;
+    private final FaturaRepository faturaRepository;
+    private final AjusteCreditoCartaoRepository ajusteRepository;
 
-    public ContaBancariaService(ContaBancariaRepository repository, CartaoRepository cartaoRepository, RegistroDeMovimentacaoRepository registroRepository) {
+    public ContaBancariaService(ContaBancariaRepository repository, CartaoRepository cartaoRepository, RegistroDeMovimentacaoRepository registroRepository, FaturaRepository faturaRepository, AjusteCreditoCartaoRepository ajusteRepository) {
         this.repository = repository;
         this.cartaoRepository = cartaoRepository;
         this.registroRepository = registroRepository;
+        this.faturaRepository = faturaRepository;
+        this.ajusteRepository = ajusteRepository;
     }
 
     @Transactional
@@ -31,8 +40,8 @@ public class ContaBancariaService {
         ContaBancaria novoObj = new ContaBancaria(
             data.nomeDoBanco(),
             data.saldoCorrente(),
-            data.creditoTotal(),
-            data.creditoRestante(),
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
             UsuarioService.obterUsuarioAutenticado()
         );
         return new ContaBancariaResDTO(repository.save(novoObj));
@@ -44,11 +53,25 @@ public class ContaBancariaService {
     }
 
     public List<ContaBancariaResDTO> consultarTodos() {
-        return repository.findByTitularId(UsuarioService.obterUsuarioAutenticado().getId()).stream().map(ContaBancariaResDTO::new).toList();
+        return repository.findByTitularId(UsuarioService.obterUsuarioAutenticado().getId()).stream().map(this::paraResposta).toList();
     }
 
     public ContaBancariaResDTO consultarPorId(String id) {
-        return new ContaBancariaResDTO(buscarEntidadePorId(id));
+        return paraResposta(buscarEntidadePorId(id));
+    }
+
+    private ContaBancariaResDTO paraResposta(ContaBancaria conta) {
+        BigDecimal total = BigDecimal.ZERO;
+        BigDecimal usado = BigDecimal.ZERO;
+        for (CartaoCredito cartao : cartaoRepository.findCartoesDeCreditoDaConta(conta.getId())) {
+            total = total.add(cartao.getLimiteCredito());
+            BigDecimal faturas = faturaRepository.somarTotalPorCartaoEStatusDiferente(cartao.getId(), StatusFaturaEnum.PAGA);
+            BigDecimal ajuste = ajusteRepository.findFirstByCartaoCredito_IdOrderByRegistradoEmDescIdDesc(cartao.getId())
+                .map(item -> item.getCreditoUtilizadoDesejado().subtract(item.getCreditoFaturasAbertasNoAjuste()))
+                .orElse(BigDecimal.ZERO);
+            usado = usado.add(faturas.add(ajuste).max(BigDecimal.ZERO));
+        }
+        return new ContaBancariaResDTO(conta, total, usado, total.subtract(usado));
     }
 
     @Transactional

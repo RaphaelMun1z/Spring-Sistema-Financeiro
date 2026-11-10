@@ -92,20 +92,31 @@ public class ContaBancaria {
         this.creditoRestante = creditoRestante;
     }
 
-    public BigDecimal getCreditoTotal() {
+    /** Valor legado persistido. Para leituras atuais, use o agregado calculado no servico. */
+    public BigDecimal getCreditoTotalPersistido() {
         return creditoTotal;
     }
+
+    /** @deprecated creditoTotal atual e agregado no servico a partir dos cartoes. */
+    @Deprecated
+    public BigDecimal getCreditoTotal() { return creditoTotal; }
 
     public void setCreditoTotal(BigDecimal creditoTotal) {
         this.creditoTotal = creditoTotal;
     }
 
-    public BigDecimal getCreditoRestante() {
+    /** Valor legado persistido. Nao deve ser usado para validar ou agregar credito atual. */
+    public BigDecimal getCreditoRestantePersistido() {
         return creditoRestante;
     }
 
+    /** @deprecated creditoRestante atual e agregado no servico a partir dos cartoes. */
+    @Deprecated
+    public BigDecimal getCreditoRestante() { return creditoRestante; }
+
     public BigDecimal getCreditoUsado() {
-        return creditoTotal.subtract(creditoRestante);
+        return (creditoTotal == null ? BigDecimal.ZERO : creditoTotal)
+            .subtract(creditoRestante == null ? BigDecimal.ZERO : creditoRestante);
     }
 
     public Usuario getTitular() {

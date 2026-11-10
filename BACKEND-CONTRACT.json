@@ -1,0 +1,133 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Gestão Financeira API",
+    "version": "0.0.1-SNAPSHOT",
+    "description": "Contrato da operação de ajuste de crédito. Prefixo da API: /api."
+  },
+  "paths": {
+    "/cartoes/{cartaoId}/ajustes-credito": {
+      "post": {
+        "tags": ["Cartões"],
+        "summary": "Ajustar crédito utilizado",
+        "operationId": "ajustarCreditoCartao",
+        "description": "Alinha o crédito usado sem criar compras, lançamentos, movimentações ou faturas.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "cartaoId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AjusteCreditoCartaoReqDTO" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Ajuste registrado.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AjusteCreditoCartaoResDTO" }
+              }
+            }
+          },
+          "400": {
+            "description": "Valor inválido, fora do intervalo ou cartão sem crédito.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    { "$ref": "#/components/schemas/ValidationErrors" },
+                    { "$ref": "#/components/schemas/ExceptionResponse" }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Usuário não autenticado.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ExceptionResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Cartão não encontrado para o usuário.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ExceptionResponse" }
+              }
+            }
+          }
+        },
+        "x-credit-calculation": "Usado = max(0, faturas não pagas atuais + crédito desejado - faturas não pagas no instante do último ajuste). Compras posteriores somam pelos valores das faturas."
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "AjusteCreditoCartaoReqDTO": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["creditoUtilizadoDesejado"],
+        "properties": {
+          "creditoUtilizadoDesejado": {
+            "type": "number",
+            "minimum": 0,
+            "multipleOf": 0.01,
+            "description": "Crédito desejado; deve ser menor ou igual ao limite do cartão."
+          }
+        }
+      },
+      "AjusteCreditoCartaoResDTO": {
+        "type": "object",
+        "required": [
+          "id",
+          "cartaoId",
+          "usuarioId",
+          "registradoEm",
+          "creditoUtilizadoAnterior",
+          "creditoUtilizadoDesejado",
+          "creditoDisponivel"
+        ],
+        "properties": {
+          "id": { "type": "string" },
+          "cartaoId": { "type": "string" },
+          "usuarioId": { "type": "string" },
+          "registradoEm": { "type": "string", "format": "date-time" },
+          "creditoUtilizadoAnterior": { "type": "number" },
+          "creditoUtilizadoDesejado": { "type": "number", "minimum": 0 },
+          "creditoDisponivel": { "type": "number", "minimum": 0 }
+        }
+      },
+      "ExceptionResponse": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "string" },
+          "errors": { "type": "array", "items": { "type": "string" } },
+          "path": { "type": "string" }
+        }
+      },
+      "ValidationErrors": {
+        "type": "object",
+        "additionalProperties": { "type": "string" },
+        "description": "Mapa de campo para mensagem de validação."
+      }
+    }
+  }
+}
